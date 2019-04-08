@@ -146,6 +146,7 @@ function finish() {
         // div > label > input
         let thisAnswer = ANSWER_TYPES[parseInt(answerOptions[i].firstElementChild.firstElementChild.dataset.type)];
         answerOptions[i].style.color = thisAnswer.color;
+        answerOptions[i].setAttribute("aria-label", thisAnswer.name)
     }
 
 
