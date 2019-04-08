@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Elixer Quiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="lib/css/bootstrap.css">
+    <link rel="stylesheet" href="lib/css/bootstrap-grid.css">
+    <link rel="stylesheet" href="lib/css/bootstrap-reboot.css">
+</head>
+<body>
+<br>
+
+<div class="container">
+    <div class="row">
+        <h3>Elixer Quiz!</h3>
+    </div>
+    <div class="row">
+        <p>
+            Press <button id="start" class="btn btn-primary">Loading...</button> to begin!
+        </p>
+    </div>
+
+    <div id="quiz">
+
+    </div>
+    <div id="done" style="visibility: hidden;">
+        <div class="row justify-content-center">
+            <button id="finish" class="btn btn-dark" onclick="finish()">Finish</button>
+        </div>
+    </div>
+    <div id="result" style="visibility: hidden;" aria-live="polite">
+        <div class="row justify-content-center">
+            <h4>You are a/an <span id="result-type" style="font-weight: bold;"></span>!</h4>
+        </div>
+        <div id="result-details">
+
+        </div>
+    </div>
+</div>
+
+<script src="lib/js/jquery-3.3.1.slim.js"></script>
+<script src="lib/js/bootstrap.bundle.js"></script>
+<script src="index.js"></script>
+</body>
+</html>
