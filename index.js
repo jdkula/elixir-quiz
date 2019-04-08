@@ -5,10 +5,10 @@ const QUIZLET_URL = "https://cors-anywhere.herokuapp.com/https://quizlet.com/384
 
 /** Data about each answer type */
 const ANSWER_TYPES = {
-    1: {name: "Aura", color: "#303a85", particle: "an"},
+    1: {name: "Aura", color: "#4a851b", particle: "an"},
     2: {name: "Elemental", color: "#aa8500", particle: "an"},
-    3: {name: "Enchanter", color: "#00aa53",  particle: "an"},
-    4: {name: "Transformer", color: "#aa0098", particle: "a"}
+    3: {name: "Enchanter", color: "#8632aa",  particle: "an"},
+    4: {name: "Transformer", color: "#aa2000", particle: "a"}
 };
 
 /** Stores the user's answers, one slot for each answer they picked corresponding to each answer type. */
@@ -68,6 +68,16 @@ function getMaxValue(array) {
     }
 
     return maxValue;
+}
+
+/**
+ * Clears all children of a node.
+ * @param node {Node}
+ */
+function clearChildren(node) {
+    while (node.firstChild) {
+        node.removeChild(node.firstChild);
+    }
 }
 
 // === QUIZLET PARSING ===
@@ -162,6 +172,7 @@ function finish() {
 
 
     resultParticle.innerText = results[0].particle;
+    clearChildren(resultType);
     let first = true;
     for(result of results) {
         let informer = document.createElement("SPAN");
@@ -176,7 +187,7 @@ function finish() {
         resultType.appendChild(informer);
     }
 
-    details.innerHTML = "";
+    clearChildren(details);
     for(let i = 1; i <= answers.length; i++) {
         let div = document.createElement("DIV");
         div.innerHTML = `
