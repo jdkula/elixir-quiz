@@ -5,10 +5,10 @@ const QUIZLET_URL = "https://cors-anywhere.herokuapp.com/https://quizlet.com/384
 
 /** Data about each answer type */
 const ANSWER_TYPES = {
-    1: {name: "Aura", color: "#303a85"},
-    2: {name: "Elemental", color: "#aa8500"},
-    3: {name: "Enchanter", color: "#00aa53"},
-    4: {name: "Transformer", color: "#aa0098"}
+    1: {name: "Aura", color: "#303a85", particle: "an"},
+    2: {name: "Elemental", color: "#aa8500", particle: "an"},
+    3: {name: "Enchanter", color: "#00aa53",  particle: "an"},
+    4: {name: "Transformer", color: "#aa0098", particle: "a"}
 };
 
 /** Stores the user's answers, one slot for each answer they picked corresponding to each answer type. */
@@ -59,17 +59,15 @@ function shuffle(a) {
 /**
  * Finds the index containg the array's maximum value, or -1 if not found.
  */
-function getMaxIndex(array) {
-    let maxIndex = 0;
-    let maxValue = -1;
+function getMaxValue(array) {
+    let maxValue = 0;
     for(let i = 0; i < array.length; i++) {
         if(array[i] > maxValue) {
-            maxIndex = i;
             maxValue = array[i];
         }
     }
 
-    return maxIndex + 1;
+    return maxValue;
 }
 
 // === QUIZLET PARSING ===
@@ -129,28 +127,54 @@ function parseData(fragment) {
  */
 function finish() {
     let result = document.getElementById("result");
+    let resultParticle = document.getElementById("result-particle");
     let resultType = document.getElementById("result-type");
     let done = document.getElementById("done");
     let details = document.getElementById("result-details");
 
-    let answer = ANSWER_TYPES[getMaxIndex(answers)];
+    let maxScore = getMaxValue(answers);
+    let results = [];
+
+    // accounts for ties
+    for(let i = 0; i < answers.length; i++) {
+        if(answers[i] === maxScore) {
+            results.push(ANSWER_TYPES[i + 1]);
+        }
+    }
 
     result.style.visibility = "unset";
     done.style.visibility = "hidden";
-
-    resultType.style.color = answer.color;
 
     // colors all questions the color of the answer they are linked to.
     let answerOptions = document.querySelectorAll("div.answer");
     for (let i = 0; i < answerOptions.length; i++) {
         // div > label > input
-        let thisAnswer = ANSWER_TYPES[parseInt(answerOptions[i].firstElementChild.firstElementChild.dataset.type)];
+        let input = answerOptions[i].firstElementChild.firstElementChild;
+        let thisAnswer = ANSWER_TYPES[parseInt(input.dataset.type)];
         answerOptions[i].style.color = thisAnswer.color;
-        answerOptions[i].setAttribute("aria-label", thisAnswer.name)
+
+        let label = answerOptions[i].firstElementChild;
+        let description = document.createElement("SPAN");
+        description.className = "screen-reader-text";
+        description.innerText = `(${thisAnswer.name})`;
+        label.appendChild(description);
     }
 
 
-    resultType.innerText = answer.name;
+    resultParticle.innerText = results[0].particle;
+    let first = true;
+    for(result of results) {
+        let informer = document.createElement("SPAN");
+        informer.style.color = result.color;
+        if(!first) {
+            let orSpan = document.createElement("SPAN");
+            orSpan.style.color = "black";
+            orSpan.innerText = " or ";
+            resultType.appendChild(orSpan);
+        } else first = false;
+        informer.innerText = result.name;
+        resultType.appendChild(informer);
+    }
 
     details.innerHTML = "";
     for(let i = 1; i <= answers.length; i++) {
@@ -167,7 +191,6 @@ function finish() {
  * @param target {HTMLInputElement} The checkbox
  */
 function answerQuestion(target) {
-    console.log(target);
     answers[parseInt(target.dataset.type) - 1] += target.checked ? 1 : -1;
 }
 
@@ -206,6 +229,7 @@ function getQuestionElement(number, text, options, mapping) {
     let elem = document.createElement("DIV");
     elem.innerHTML = html;
     elem.className = "col-md-12 col-lg-4";
+    elem.style.paddingBottom = "10px";
     return elem;
 }
 
@@ -233,7 +257,6 @@ function play() {
         if (i % 3 === 0) {
             lastRow = document.createElement("DIV");
             lastRow.className = "row";
-            lastRow.style.paddingBottom = "10px";
             quizDiv.appendChild(lastRow);
         }
         lastRow.appendChild(elem);

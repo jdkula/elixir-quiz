@@ -7,6 +7,21 @@
     <link rel="stylesheet" href="lib/css/bootstrap.css">
     <link rel="stylesheet" href="lib/css/bootstrap-grid.css">
     <link rel="stylesheet" href="lib/css/bootstrap-reboot.css">
+    <style>
+        /* Text meant only for screen readers. */
+        .screen-reader-text {
+            border: 0;
+            clip: rect(1px, 1px, 1px, 1px);
+            clip-path: inset(50%);
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            padding: 0;
+            position: absolute;
+            width: 1px;
+            word-wrap: normal !important;
+        }
+    </style>
 </head>
 <body>
 <br>
@@ -31,7 +46,7 @@
     </div>
     <div id="result" style="visibility: hidden;">
         <div class="row justify-content-center">
-            <h4>You are a/an <span id="result-type" style="font-weight: bold;"></span>!</h4>
+            <h4>You are <span id="result-particle"></span> <span id="result-type" style="font-weight: bold;"></span>!</h4>
         </div>
         <div id="result-details">
 
