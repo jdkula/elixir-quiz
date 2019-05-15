@@ -1,7 +1,7 @@
 // === GLOBALS ===
 
 /** Where to pull data from (in this case, Mark's quizlet. */
-const QUIZLET_URL = "https://cors-anywhere.herokuapp.com/https://quizlet.com/384316477/elixer-assignments-flash-cards/";
+const QUIZLET_URL = "http://pi.stanford.jonak.link:2677/https://quizlet.com/384316477/elixer-assignments-flash-cards/";
 
 /** Data about each answer type */
 const ANSWER_TYPES = {
