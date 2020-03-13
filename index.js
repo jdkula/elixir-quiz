@@ -28,22 +28,6 @@ let data = [];
 // === UTILITY ===
 
 /**
- * Reads in all text from a Uint8Array stream.
- * @param stream {ReadableStream<Uint8Array>} The stream to read in
- * @returns {Promise<string>} When the promise completes, the result will be the whole string.
- */
-async function getStreamText(stream) {
-    let text = "";
-    let reader = stream.getReader();
-    let read = reader.read();
-    while (!read.done) {
-        text += new TextDecoder("utf-8").decode(read.value);
-        read = await reader.read();
-    }
-    return text;
-}
-
-/**
  * Shuffles array in place. ES6 version
  * @param {Array} a items An array containing the items.
  * Source: https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
@@ -263,7 +247,7 @@ function play() {
 
     let lastRow = null;
 
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < Math.min(12, data.length); i++) {
         let elem = getQuestionElement(i + 1, data[i].text, data[i].answers, data[i].mapping);
         if (i % 3 === 0) {
             lastRow = document.createElement("DIV");
@@ -301,7 +285,7 @@ async function init() {
     });
     let fragment = document.createDocumentFragment();
     let div = document.createElement("DIV");
-    div.innerHTML = await getStreamText(data.body);
+    div.innerHTML = await data.text();
     fragment.appendChild(div);
     parseData(fragment);
 }
