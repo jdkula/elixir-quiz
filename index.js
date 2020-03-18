@@ -7,12 +7,12 @@ const QUIZLET_URL = "./quizlet_page.html";
 const ANSWER_TYPES = {
     1: {name: "Aura", color: "#4a851b", particle: "an"},
     2: {name: "Elemental", color: "#aa8500", particle: "an"},
-    3: {name: "Enchanter", color: "#8632aa",  particle: "an"},
+    3: {name: "Enchanter", color: "#8632aa", particle: "an"},
     4: {name: "Transformer", color: "#aa2000", particle: "a"}
 };
 
-/** Stores the user's answers, one slot for each answer they picked corresponding to each answer type. */
-let answers = [0, 0, 0, 0];
+/** Stores the user's answers, a map of question numbers to a set of answers. */
+let answers = new Map();
 
 /**
  * interface Question {
@@ -45,8 +45,8 @@ function shuffle(a) {
  */
 function getMaxValue(array) {
     let maxValue = 0;
-    for(let i = 0; i < array.length; i++) {
-        if(array[i] > maxValue) {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i] > maxValue) {
             maxValue = array[i];
         }
     }
@@ -126,12 +126,21 @@ function finish() {
     let done = document.getElementById("done");
     let details = document.getElementById("result-details");
 
-    let maxScore = getMaxValue(answers);
+
+    let points = [0, 0, 0, 0];
+
+    for (let set of answers.values()) {
+        for (let ans of set) {
+            points[ans - 1] += 1 / set.size
+        }
+    }
+
+    let maxScore = getMaxValue(points);
     let results = [];
 
     // accounts for ties
-    for(let i = 0; i < answers.length; i++) {
-        if(answers[i] === maxScore) {
+    for (let i = 0; i < points.length; i++) {
+        if (points[i] === maxScore) {
             results.push(ANSWER_TYPES[i + 1]);
         }
     }
@@ -158,10 +167,10 @@ function finish() {
     resultParticle.innerText = results[0].particle;
     clearChildren(resultType);
     let first = true;
-    for(result of results) {
+    for (result of results) {
         let informer = document.createElement("SPAN");
         informer.style.color = result.color;
-        if(!first) {
+        if (!first) {
             let orSpan = document.createElement("SPAN");
             orSpan.style.color = "black";
             orSpan.innerText = " or ";
@@ -172,10 +181,11 @@ function finish() {
     }
 
     clearChildren(details);
-    for(let i = 1; i <= answers.length; i++) {
+    for (let i = 1; i <= points.length; i++) {
         let div = document.createElement("DIV");
+        let numString = (Math.floor(points[i - 1] * 100) / 100).toString();
         div.innerHTML = `
-            <span style="color: ${ANSWER_TYPES[i].color}">${ANSWER_TYPES[i].name}: ${answers[i - 1]}</span>
+            <span style="color: ${ANSWER_TYPES[i].color}">${ANSWER_TYPES[i].name}: ${numString}</span>
         `;
         details.appendChild(div);
     }
@@ -186,7 +196,13 @@ function finish() {
  * @param target {HTMLInputElement} The checkbox
  */
 function answerQuestion(target) {
-    answers[parseInt(target.dataset.type) - 1] += target.checked ? 1 : -1;
+    let answersSet = answers.get(target.dataset.question) || new Set();
+    if (target.checked) {
+        answersSet.add(parseInt(target.dataset.type))
+    } else {
+        answersSet.delete(parseInt(target.dataset.type))
+    }
+    answers.set(target.dataset.question, answersSet);
 }
 
 /**
@@ -203,7 +219,7 @@ function getQuestionElement(number, text, options, mapping) {
         optionsHtml += `
             <div class="form-check answer">
                 <label>
-                    <input data-type="${mapping[i]}" type="checkbox" class="form-check-input" onclick="answerQuestion(this)">
+                    <input data-question="${number}" data-type="${mapping[i]}" type="checkbox" class="form-check-input" onclick="answerQuestion(this)">
                     ${options[i]}
                 </label>
             </div>
