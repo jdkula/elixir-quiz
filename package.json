@@ -1,0 +1,36 @@
+{
+  "name": "elixir-quiz",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_OPTIONS='--inspect' next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint --ext .js,.ts,.jsx,.tsx --ignore-pattern .*node_modules.* ./pages ./components --ignore-pattern .*node_modules.*"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "jsdom": "^16.3.0",
+    "next": "9.4.4",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "styled-components": "^5.1.1"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^16.2.3",
+    "@types/node": "^14.0.23",
+    "@types/react": "^16.9.43",
+    "@types/styled-components": "^5.1.1",
+    "@typescript-eslint/eslint-plugin": "^3.6.1",
+    "@typescript-eslint/parser": "^3.6.1",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "babel-plugin-styled-components": "^1.10.7",
+    "cross-env": "^7.0.2",
+    "eslint": "^7.4.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.20.3",
+    "prettier": "^2.0.5",
+    "typescript": "^3.9.6"
+  }
+}
