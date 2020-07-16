@@ -1,4 +1,13 @@
 /**
+ * quizlet.ts
+ * ===========
+ * Contains functions to parse Questions from
+ * a provided Quizlet of a certain format.
+ */
+import { Question, Answer } from "./quiz";
+import { getElixir } from "./elixir";
+
+/**
  * Given a [definition] of the form:
  * a) [number]<br>
  * b) [number]<br>
@@ -12,39 +21,11 @@ export function parseAssignments(definition: Element): number[] {
     return text.split("<br>").map((s) => parseInt(s.substr(s.search(/\d+/)).trim()));
 }
 
-const kMapping: { [k: number]: Elixir } = {
-    1: { type: "Aura", color: "#4a851b", particle: "an" },
-    2: { type: "Elemental", color: "#aa8500", particle: "an" },
-    3: { type: "Enchanter", color: "#8632aa", particle: "an" },
-    4: { type: "Transformer", color: "#aa2000", particle: "a" },
-};
-
-type ElixirType = "Aura" | "Elemental" | "Enchanter" | "Transformer";
-
-interface Elixir {
-    type: ElixirType;
-    color: string;
-    particle: "a" | "an";
-}
-
-interface Answer {
-    text: string;
-    assignment: Elixir;
-}
-
-export interface Question {
-    question: string;
-    answers: Answer[];
-}
-
 /**
- * Parses a term from Quizlet. Terms take the format:
- * Description<br>Description<br>a) Possible Answer<br>b) Possible Answer<br>c) Possible Answer
- *
- * @param The HTML element containing the term.
+ * Parses a question from the quizlet,
+ * grabbing all the text until the first answer (beginning with 'a)')
  */
 export function parseQuestion(question: Element): string {
-    const re = /[^a-z][a-z]\) .*?(?=<br>|\n)/g;
     const text = question.textContent;
 
     const cutoff = text.indexOf("a)");
@@ -53,10 +34,8 @@ export function parseQuestion(question: Element): string {
 }
 
 /**
- * Parses a term from Quizlet. Terms take the format:
- * Description<br>Description<br>a) Possible Answer<br>b) Possible Answer<br>c) Possible Answer
- *
- * @param The HTML element containing the term.
+ * Parses a list of answers from the quizlet. Answers look like:
+ * a) an answer<br>
  */
 export function parseAnswers(question: Element): string[] {
     const re = /[^a-z][a-z]\) .*?(?=<br>)/g;
@@ -64,9 +43,13 @@ export function parseAnswers(question: Element): string[] {
     html += "<br>";
     const info = html.match(re);
 
-    return info.map((s) => s.substr(4).trim());
+    // substr(3) removes " x)"
+    return info.map((s) => s.substr(3).trim());
 }
 
+/**
+ * Parses a single flashcard into a Question.
+ */
 export function parseFlashcard(flashcard: Element): Question {
     const questionHtml = flashcard.querySelector(".SetPageTerm-wordText > .TermText");
     const assignmentHtml = flashcard.querySelector(".SetPageTerm-definitionText > .TermText");
@@ -80,9 +63,12 @@ export function parseFlashcard(flashcard: Element): Question {
     // assert(answerTexts.length === assignmentsRaw.length)
 
     for (let i = 0; i < answerTexts.length; i++) {
+        const elixir = getElixir(assignments[i]);
+        if (!elixir) continue;
+
         answers.push({
             text: answerTexts[i],
-            assignment: kMapping[assignments[i]],
+            assignment: elixir.type,
         });
     }
 
@@ -92,8 +78,11 @@ export function parseFlashcard(flashcard: Element): Question {
     };
 }
 
-export function parsePage(fragment: Element): Set<Question> {
-    const flashcards = fragment.querySelectorAll(".SetPageTerms-term");
+/**
+ * Parses an entire Quizlet into an unordered set of questions.
+ */
+export function parseQuizlet(document: Element): Set<Question> {
+    const flashcards = document.querySelectorAll(".SetPageTerms-term");
     const set = new Set<Question>();
 
     for (const flashcard of flashcards) {

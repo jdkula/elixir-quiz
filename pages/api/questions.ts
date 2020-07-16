@@ -1,10 +1,12 @@
 import { NextApiHandler } from "next";
 import axios from "axios";
 import { JSDOM } from "jsdom";
-import { parsePage, Question } from "~/lib/quizlet";
+import { parseQuizlet } from "~/lib/quizlet";
+import { Question } from "~/lib/quiz";
+import { randomized } from "~/lib/util";
 
 let cache: Question[] | null = null;
-let cacheTime: number = 0;
+let cacheTime = 0;
 
 async function populateCache(): Promise<Question[]> {
     const response = await axios.get(process.env.QUIZLET_URL, {
@@ -18,7 +20,7 @@ async function populateCache(): Promise<Question[]> {
 
     const dom = new JSDOM(html);
 
-    const value = [...parsePage(dom.window.document.body).values()];
+    const value = [...parseQuizlet(dom.window.document.body).values()];
     cache = value;
     cacheTime = Date.now();
 
@@ -34,8 +36,14 @@ async function getQuestions(): Promise<Question[]> {
 }
 
 const Questions: NextApiHandler = async (req, res) => {
-    res.setHeader("Cache-Control", "max-age=3600, public");
-    res.json(await getQuestions());
+    const random = (req.query.randomized as string)?.toLowerCase()?.trim()?.includes("true") === true;
+    const selectStr = (req.query.select as string)?.toLowerCase()?.trim();
+    const selected = (selectStr && Number.parseInt(selectStr)) || null;
+    let questions = await getQuestions();
+
+    if (random) questions = randomized(questions);
+    if (selected) questions = questions.splice(0, selected);
+    res.json(questions);
 };
 
 export default Questions;
