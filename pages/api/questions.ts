@@ -1,9 +1,12 @@
 import { NextApiHandler } from "next";
 import axios from "axios";
 import { JSDOM } from "jsdom";
-import { parsePage } from "~/lib/quizlet";
+import { parsePage, Question } from "~/lib/quizlet";
 
-const Questions: NextApiHandler = async (req, res) => {
+let cache: Question[] | null = null;
+let cacheTime: number = 0;
+
+async function populateCache(): Promise<Question[]> {
     const response = await axios.get(process.env.QUIZLET_URL, {
         headers: {
             "User-Agent":
@@ -15,7 +18,24 @@ const Questions: NextApiHandler = async (req, res) => {
 
     const dom = new JSDOM(html);
 
-    res.json([...parsePage(dom.window.document.body).values()]);
+    const value = [...parsePage(dom.window.document.body).values()];
+    cache = value;
+    cacheTime = Date.now();
+
+    return value;
+}
+
+async function getQuestions(): Promise<Question[]> {
+    if (!cache || Date.now() - cacheTime > 1000 * 60 * 60) {
+        return await populateCache();
+    }
+
+    return cache;
+}
+
+const Questions: NextApiHandler = async (req, res) => {
+    res.setHeader("Cache-Control", "max-age=3600, public");
+    res.json(await getQuestions());
 };
 
 export default Questions;

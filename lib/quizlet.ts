@@ -32,7 +32,7 @@ interface Answer {
     assignment: Elixir;
 }
 
-interface Question {
+export interface Question {
     question: string;
     answers: Answer[];
 }
