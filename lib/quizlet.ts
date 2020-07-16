@@ -44,13 +44,12 @@ interface Question {
  * @param The HTML element containing the term.
  */
 export function parseQuestion(question: Element): string {
-    const re = /[^a-z][a-z]\) .*?(?=<br>)/g;
-    let html = question.innerHTML;
-    html += "<br>";
+    const re = /[^a-z][a-z]\) .*?(?=<br>|\n)/g;
+    const text = question.textContent;
 
-    const cutoff = html.search(re);
+    const cutoff = text.indexOf("a)");
 
-    return html.substring(0, cutoff);
+    return text.substring(0, cutoff).trim();
 }
 
 /**
@@ -65,7 +64,7 @@ export function parseAnswers(question: Element): string[] {
     html += "<br>";
     const info = html.match(re);
 
-    return info.map((s) => s.substr(1)),
+    return info.map((s) => s.substr(4).trim());
 }
 
 export function parseFlashcard(flashcard: Element): Question {
@@ -73,7 +72,7 @@ export function parseFlashcard(flashcard: Element): Question {
     const assignmentHtml = flashcard.querySelector(".SetPageTerm-definitionText > .TermText");
 
     const question = parseQuestion(questionHtml);
-    const answerTexts = parseQuestion(questionHtml)
+    const answerTexts = parseAnswers(questionHtml);
     const assignments = parseAssignments(assignmentHtml);
 
     const answers: Answer[] = [];
@@ -83,13 +82,13 @@ export function parseFlashcard(flashcard: Element): Question {
     for (let i = 0; i < answerTexts.length; i++) {
         answers.push({
             text: answerTexts[i],
-            assignment: kMapping[assignments[i]]
-        })
+            assignment: kMapping[assignments[i]],
+        });
     }
 
     return {
         question,
-        answers
+        answers,
     };
 }
 
