@@ -1,6 +1,6 @@
-import { ReactElement, ReactNode, Ref, forwardRef } from "react";
+import { ReactNode, forwardRef } from "react";
 import { Question } from "~/lib/quiz";
-import { Card, CardContent, Typography, Box, GridListTile } from "@material-ui/core";
+import { Card, CardContent, Typography, Box } from "@material-ui/core";
 
 interface Props {
     question: Question;

@@ -1,4 +1,4 @@
-import { ReactElement, useState, forwardRef } from "react";
+import { ReactElement, useState } from "react";
 import useQuestions from "~/lib/useQuestions";
 import { Button, Box, ButtonProps } from "@material-ui/core";
 import { ElixirType } from "~/lib/elixir";

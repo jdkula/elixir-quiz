@@ -1,7 +1,6 @@
-import { ReactElement, useState, useEffect, ChangeEvent } from "react";
+import { ReactElement, useState, ChangeEvent } from "react";
 import { Answer } from "~/lib/quiz";
 import { Typography, FormControlLabel, Checkbox, Box } from "@material-ui/core";
-import useElixirs from "~/lib/useElixirs";
 import { ElixirType, getElixir } from "~/lib/elixir";
 
 interface Props {
@@ -9,8 +8,8 @@ interface Props {
     index: number;
     showing?: boolean;
 
-    select(type: ElixirType): void;
-    deselect(type: ElixirType): void;
+    select: (type: ElixirType) => void;
+    deselect: (type: ElixirType) => void;
 }
 
 export default function AnswerOption({ answer, index, showing, select, deselect }: Props): ReactElement {

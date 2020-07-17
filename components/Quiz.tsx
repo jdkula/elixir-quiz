@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 import { Question } from "~/lib/quiz";
 import QuizContainer from "./QuizContainer";
-import { GridListTile, withStyles, makeStyles } from "@material-ui/core";
+import { GridListTile } from "@material-ui/core";
 import QuestionCard from "./QuestionCard";
 import AnswerOption from "./AnswerOption";
 import { AnswerMap } from "~/pages";

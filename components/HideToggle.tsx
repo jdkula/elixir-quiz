@@ -1,4 +1,4 @@
-import { ReactNode, ReactElement, useState } from "react";
+import { ReactElement, useState } from "react";
 import { Switch, Box, FormControlLabel, Slide } from "@material-ui/core";
 
 export default function HideToggle({ children, label }: { children: ReactElement; label?: string }): ReactElement {

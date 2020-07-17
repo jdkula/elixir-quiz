@@ -1,5 +1,3 @@
-import { keys } from "@material-ui/core/styles/createBreakpoints";
-
 export type ElixirType = "Aura" | "Elemental" | "Enchanter" | "Transformer" | "Neutral";
 export default interface Elixir {
     type: ElixirType;

@@ -8,7 +8,6 @@ import {
     Typography,
     ThemeProvider,
     createMuiTheme,
-    Avatar,
 } from "@material-ui/core";
 import Head from "next/head";
 
