@@ -1,65 +1,71 @@
 import { ReactElement, useState } from "react";
 import useQuestions from "~/lib/useQuestions";
-import useElixirs from "~/lib/useElixirs";
-import {
-    AppBar,
-    Toolbar,
-    Typography,
-    CssBaseline,
-    Button,
-    Container,
-    Box,
-    Grid,
-    GridList,
-    GridListTile,
-} from "@material-ui/core";
-import QuestionCard from "~/components/QuestionCard";
+import { Button, Box } from "@material-ui/core";
 import { ElixirType } from "~/lib/elixir";
-import AnswerOption from "~/components/AnswerOption";
 import AppContainer from "~/components/AppContainer";
-import QuizContainer from "~/components/QuizContainer";
 import Results from "~/components/Results";
 
-import { Map } from "immutable";
+import { Map, Set } from "immutable";
+import Head from "next/head";
+import GlobalTimer from "~/components/GlobalTimer";
+import HideToggle from "~/components/HideToggle";
+import Quiz from "~/components/Quiz";
+
+export type AnswerMap = Map<number, Set<ElixirType>>;
 
 export default function Index(): ReactElement {
     const [questions, questionsLoading] = useQuestions(12);
 
     const [showingResults, setShowingResults] = useState(false);
 
-    const [scores, setScores] = useState(Map<ElixirType, number>());
+    const [answers, setAnswers] = useState<AnswerMap>(Map());
 
-    const select = (type: ElixirType) => {
-        setScores(scores.set(type, (scores.get(type) ?? 0) + 1));
+    const [started, setStarted] = useState(false);
+
+    const start = () => {
+        setStarted(true);
+        GlobalTimer.start();
     };
 
-    const deselect = (type: ElixirType) => {
-        setScores(scores.set(type, (scores.get(type) ?? 0) - 1));
+    const stop = () => {
+        setShowingResults(true);
+        GlobalTimer.stop();
     };
 
     return (
-        <AppContainer>
-            <Typography variant="h5">Elixir Quiz</Typography>
-            <QuizContainer>
-                {questions.map((q, i) => (
-                    <GridListTile key={q.question}>
-                        <QuestionCard question={q} index={i}>
-                            {q.answers.map((a, j) => (
-                                <AnswerOption
-                                    key={i + " " + j}
-                                    answer={a}
-                                    index={j}
-                                    select={select}
-                                    deselect={deselect}
-                                    showing={showingResults}
-                                />
-                            ))}
-                        </QuestionCard>
-                    </GridListTile>
-                ))}
-            </QuizContainer>
-            {!showingResults && <Button onClick={() => setShowingResults(true)}>Calculate scores</Button>}
-            {showingResults && <Results scores={scores} />}
+        <AppContainer
+            left={
+                <HideToggle>
+                    <GlobalTimer />
+                </HideToggle>
+            }
+        >
+            <Head>
+                <title>Elixir Quiz</title>
+            </Head>
+            <Box clone width="10rem">
+                <Button
+                    onClick={start}
+                    disabled={questionsLoading || started}
+                    variant="outlined"
+                    color="secondary"
+                    size="large"
+                >
+                    {(questionsLoading && "Loading...") || (started && "Go!") || "Start!"}
+                </Button>
+            </Box>
+            {started && (
+                <Quiz questions={questions} showingResults={showingResults} answers={answers} setAnswers={setAnswers} />
+            )}
+
+            {started && (
+                <Box width="15rem">
+                    <Button variant="outlined" color="secondary" size="large" disabled={showingResults} onClick={stop}>
+                        {showingResults ? "Finished!" : "Calculate scores"}
+                    </Button>
+                </Box>
+            )}
+            {showingResults && <Results answers={answers} />}
         </AppContainer>
     );
 }
