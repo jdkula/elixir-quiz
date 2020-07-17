@@ -17,11 +17,13 @@ function AppContainer({
     left,
     below,
     width,
+    pinned,
 }: {
     children: ReactNode;
     left?: ReactNode;
     below?: ReactNode;
     width?: Breakpoint;
+    pinned?: boolean;
 }): ReactElement {
     const trigger = useScrollTrigger();
 
@@ -29,7 +31,7 @@ function AppContainer({
 
     return (
         <>
-            <Slide in={!(canTrigger && trigger)} appear={false}>
+            <Slide in={!(canTrigger && trigger) || pinned} appear={false}>
                 <AppBar position="sticky">
                     <Toolbar>
                         <Box flexGrow={1} ml={2}>

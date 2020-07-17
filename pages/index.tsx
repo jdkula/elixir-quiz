@@ -60,10 +60,13 @@ export default function Index(): ReactElement {
         });
     };
 
+    const [timerShown, setTimerShown] = useState(false);
+
     return (
         <AppContainer
+            pinned={timerShown || showingResults}
             left={
-                <HideToggle>
+                <HideToggle shown={timerShown} onToggle={setTimerShown}>
                     <GlobalTimer />
                 </HideToggle>
             }
