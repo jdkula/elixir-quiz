@@ -39,7 +39,7 @@ const useStyles = makeStyles({
 
 const StatsItem = ({ children }: { children?: ReactNode }) => <Box my={2}>{children}</Box>;
 const StatsAnd = withStyles({
-    notBold: { fontWeight: "normal !important", color: "initial" },
+    notBold: { fontWeight: "normal !important" as any, color: "initial" },
 })(({ children, classes }: { children?: ReactNode; classes: any }) => (
     <Box component="span" className={classes.notBold}>
         {children || " and"}
