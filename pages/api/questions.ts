@@ -29,10 +29,10 @@ async function populateCache(): Promise<Question[]> {
 
 async function getQuestions(): Promise<Question[]> {
     if (!cache || Date.now() - cacheTime > 1000 * 60 * 60) {
-        return await populateCache();
+        await populateCache();
     }
 
-    return cache;
+    return JSON.parse(JSON.stringify(cache));
 }
 
 const Questions: NextApiHandler = async (req, res) => {
