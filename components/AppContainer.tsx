@@ -29,7 +29,7 @@ function AppContainer({
 
     return (
         <>
-            <Slide in={!(canTrigger && trigger)}>
+            <Slide in={!(canTrigger && trigger)} appear={false}>
                 <AppBar position="sticky">
                     <Toolbar>
                         <Box flexGrow={1} ml={2}>
