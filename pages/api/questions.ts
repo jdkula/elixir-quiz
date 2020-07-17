@@ -37,12 +37,15 @@ async function getQuestions(): Promise<Question[]> {
 
 const Questions: NextApiHandler = async (req, res) => {
     const random = (req.query.randomized as string)?.toLowerCase()?.trim()?.includes("true") === true;
+    const randomizeQuestions =
+        (req.query.randomizeQuestions as string)?.toLowerCase()?.trim()?.includes("true") === true;
     const selectStr = (req.query.select as string)?.toLowerCase()?.trim();
     const selected = (selectStr && Number.parseInt(selectStr)) || null;
     let questions = await getQuestions();
 
     if (random) questions = randomized(questions);
     if (selected) questions = questions.splice(0, selected);
+    if (randomizeQuestions) questions.forEach((q) => (q.answers = randomized(q.answers)));
     res.json(questions);
 };
 
