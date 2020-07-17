@@ -1,6 +1,6 @@
-import { ReactElement, useState } from "react";
+import { ReactElement, useState, forwardRef } from "react";
 import useQuestions from "~/lib/useQuestions";
-import { Button, Box } from "@material-ui/core";
+import { Button, Box, ButtonProps } from "@material-ui/core";
 import { ElixirType } from "~/lib/elixir";
 import AppContainer from "~/components/AppContainer";
 import Results from "~/components/Results";
@@ -13,8 +13,16 @@ import Quiz from "~/components/Quiz";
 
 export type AnswerMap = Map<number, Set<ElixirType>>;
 
+const CenterButton = (props: ButtonProps) => (
+    <Box textAlign="center" width="100%">
+        <Box clone width="10rem">
+            <Button {...props} />
+        </Box>
+    </Box>
+);
+
 export default function Index(): ReactElement {
-    const [questions, questionsLoading] = useQuestions(12);
+    const [questions, questionsLoading, refresh] = useQuestions(12);
 
     const [showingResults, setShowingResults] = useState(false);
 
@@ -23,13 +31,33 @@ export default function Index(): ReactElement {
     const [started, setStarted] = useState(false);
 
     const start = () => {
-        setStarted(true);
+        setStarted(!started);
         GlobalTimer.start();
+    };
+
+    const restart = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+
+        setShowingResults(false);
+        setAnswers(Map());
+        setStarted(false);
+        GlobalTimer.start();
+        GlobalTimer.stop();
+        refresh();
     };
 
     const stop = () => {
         setShowingResults(true);
         GlobalTimer.stop();
+        requestAnimationFrame(() => {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: "smooth",
+            });
+        });
     };
 
     return (
@@ -43,8 +71,8 @@ export default function Index(): ReactElement {
             <Head>
                 <title>Elixir Quiz</title>
             </Head>
-            <Box clone width="10rem">
-                <Button
+            {!showingResults ? (
+                <CenterButton
                     onClick={start}
                     disabled={questionsLoading || started}
                     variant="outlined"
@@ -52,20 +80,31 @@ export default function Index(): ReactElement {
                     size="large"
                 >
                     {(questionsLoading && "Loading...") || (started && "Go!") || "Start!"}
-                </Button>
-            </Box>
-            {started && (
-                <Quiz questions={questions} showingResults={showingResults} answers={answers} setAnswers={setAnswers} />
+                </CenterButton>
+            ) : (
+                <CenterButton onClick={restart} variant="outlined" color="primary" size="large">
+                    Restart
+                </CenterButton>
             )}
 
+            <Quiz
+                questions={questions}
+                showingResults={showingResults}
+                answers={answers}
+                setAnswers={setAnswers}
+                started={started}
+            />
             {started && (
-                <Box width="15rem">
-                    <Button variant="outlined" color="secondary" size="large" disabled={showingResults} onClick={stop}>
-                        {showingResults ? "Finished!" : "Calculate scores"}
-                    </Button>
-                </Box>
+                <CenterButton variant="outlined" color="default" size="large" disabled={showingResults} onClick={stop}>
+                    {showingResults ? "Finished!" : "Finish!"}
+                </CenterButton>
             )}
             {showingResults && <Results answers={answers} />}
+            {showingResults && (
+                <CenterButton variant="outlined" color="primary" onClick={restart}>
+                    Restart
+                </CenterButton>
+            )}
         </AppContainer>
     );
 }

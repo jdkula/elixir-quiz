@@ -12,7 +12,7 @@ const kElixirInfo = {
     Elemental: { type: "Elemental", color: "#aa8500", particle: "an" } as Elixir,
     Enchanter: { type: "Enchanter", color: "#8632aa", particle: "an" } as Elixir,
     Transformer: { type: "Transformer", color: "#aa2000", particle: "a" } as Elixir,
-    Neutral: { type: "Neutral", color: "#555", particle: "a" } as Elixir,
+    Neutral: { type: "Neutral", color: "#999", particle: "a" } as Elixir,
 };
 
 const kMapping: { [k: number]: ElixirType | undefined } = {

@@ -2,21 +2,25 @@ import { Question } from "./quiz";
 import { useState, useEffect } from "react";
 import Axios from "axios";
 
-export default function useQuestions(select = 12, randomized = true): [Question[], boolean] {
+export default function useQuestions(select = 12, randomized = true): [Question[], boolean, () => void] {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        Axios.get("/api/questions", {
+    const refresh = async () => {
+        setLoading(true);
+        const response = await Axios.get("/api/questions", {
             params: {
                 randomized,
                 select,
             },
-        }).then((response) => {
-            setQuestions(response.data);
-            setLoading(false);
         });
+        setQuestions(response.data);
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        refresh();
     }, []);
 
-    return [questions, loading];
+    return [questions, loading, refresh];
 }
