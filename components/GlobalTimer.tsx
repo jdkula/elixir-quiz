@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect, useRef, ReactElement } from "react";
+import { ReactNode, useState, useEffect, useRef, ReactElement, forwardRef, ForwardRefExoticComponent } from "react";
 
 import moment from "moment";
 import { Typography, Card, Box } from "@material-ui/core";
@@ -7,7 +7,7 @@ let startTime = 0;
 let stopTime = 0;
 let handle: number | null = null;
 
-export default function GlobalTimer(): ReactElement {
+const GlobalTimer = forwardRef((_, ref) => {
     const [elapsed, setElapsed] = useState(0);
 
     const handle = useRef<number | null>(null);
@@ -29,7 +29,7 @@ export default function GlobalTimer(): ReactElement {
     const dur = moment.duration(elapsed, "milliseconds");
 
     return (
-        <Card raised>
+        <Card ref={ref} raised>
             <Box p={1}>
                 <Typography variant="h6">
                     {dur.minutes()}:{dur.seconds().toString().padStart(2, "0")}
@@ -37,7 +37,7 @@ export default function GlobalTimer(): ReactElement {
             </Box>
         </Card>
     );
-}
+}) as ForwardRefExoticComponent<any> & { start: () => void; stop: () => void };
 
 GlobalTimer.start = () => {
     GlobalTimer.stop();
@@ -56,3 +56,5 @@ GlobalTimer.stop = () => {
 
     stopTime = Date.now();
 };
+
+export default GlobalTimer;
