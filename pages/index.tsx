@@ -1,6 +1,6 @@
 import { ReactElement, useState } from "react";
 import useQuestions from "~/lib/useQuestions";
-import { Button, Box, ButtonProps } from "@material-ui/core";
+import { Button, Box, ButtonProps, LinearProgress, Collapse } from "@material-ui/core";
 import { ElixirType } from "~/lib/elixir";
 import AppContainer from "~/components/AppContainer";
 import Results from "~/components/Results";
@@ -67,25 +67,32 @@ export default function Index(): ReactElement {
                     <GlobalTimer />
                 </HideToggle>
             }
+            below={
+                <Collapse in={questionsLoading}>
+                    <LinearProgress />
+                </Collapse>
+            }
         >
             <Head>
                 <title>Elixir Quiz</title>
             </Head>
-            {!showingResults ? (
-                <CenterButton
-                    onClick={start}
-                    disabled={questionsLoading || started}
-                    variant="outlined"
-                    color="secondary"
-                    size="large"
-                >
-                    {(questionsLoading && "Loading...") || (started && "Go!") || "Start!"}
-                </CenterButton>
-            ) : (
-                <CenterButton onClick={restart} variant="outlined" color="primary" size="large">
-                    Restart
-                </CenterButton>
-            )}
+            <Box position="relative">
+                {!showingResults ? (
+                    <CenterButton
+                        onClick={start}
+                        disabled={questionsLoading || started}
+                        variant="outlined"
+                        color="secondary"
+                        size="large"
+                    >
+                        {(questionsLoading && "Loading...") || (started && "Go!") || "Start!"}
+                    </CenterButton>
+                ) : (
+                    <CenterButton onClick={restart} variant="outlined" color="primary" size="large">
+                        Restart
+                    </CenterButton>
+                )}
+            </Box>
 
             <Quiz
                 questions={questions}

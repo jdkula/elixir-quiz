@@ -15,10 +15,12 @@ import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 function AppContainer({
     children,
     left,
+    below,
     width,
 }: {
     children: ReactNode;
     left?: ReactNode;
+    below?: ReactNode;
     width?: Breakpoint;
 }): ReactElement {
     const trigger = useScrollTrigger();
@@ -35,6 +37,7 @@ function AppContainer({
                         </Box>
                         {left}
                     </Toolbar>
+                    {below}
                 </AppBar>
             </Slide>
             <Box m={4}>
