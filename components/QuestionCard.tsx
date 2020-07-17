@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from "react";
+import { ReactElement, ReactNode, Ref, forwardRef } from "react";
 import { Question } from "~/lib/quiz";
 import { Card, CardContent, Typography, Box, GridListTile } from "@material-ui/core";
 
@@ -8,20 +8,24 @@ interface Props {
     children: ReactNode;
 }
 
-const QuizCard = ({ children }: { children: ReactNode }) => (
+const QuizCard = forwardRef(({ children }: { children: ReactNode }, ref) => (
     <Box clone height="100%">
-        <Card variant="outlined"> {children} </Card>
+        <Card variant="outlined" ref={ref}>
+            {children}
+        </Card>
     </Box>
-);
+));
 
-export default function QuestionCard({ question, index, children }: Props): ReactElement {
+const QuestionCard = forwardRef(({ question, index, children }: Props, ref) => {
     return (
-        <QuizCard>
+        <QuizCard ref={ref}>
             <CardContent>
-                <Typography variant="h6">Question {index}</Typography>
+                <Typography variant="h6">Question {index + 1}</Typography>
                 <Typography variant="body1">{question.question}</Typography>
                 {children}
             </CardContent>
         </QuizCard>
     );
-}
+});
+
+export default QuestionCard;
