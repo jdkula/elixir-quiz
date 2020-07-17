@@ -2,7 +2,7 @@ import { ReactElement, useState, useEffect, ChangeEvent } from "react";
 import { Answer } from "~/lib/quiz";
 import { Typography, FormControlLabel, Checkbox, Box } from "@material-ui/core";
 import useElixirs from "~/lib/useElixirs";
-import { ElixirType } from "~/lib/elixir";
+import { ElixirType, getElixir } from "~/lib/elixir";
 
 interface Props {
     answer: Answer;
@@ -14,7 +14,6 @@ interface Props {
 }
 
 export default function AnswerOption({ answer, index, showing, select, deselect }: Props): ReactElement {
-    const [elixirs] = useElixirs();
     const [checked, setChecked] = useState(false);
 
     const update = (e: ChangeEvent<HTMLInputElement>) => {
@@ -26,12 +25,27 @@ export default function AnswerOption({ answer, index, showing, select, deselect 
     };
 
     const letterIndex = "abcdefghijklmnopqrstuvwxyz"[index];
+
+    const color = getElixir(answer.assignment).color;
+
+    const style = !showing ? undefined : { color };
+
     return (
         <div>
             <FormControlLabel
-                control={<Checkbox color="primary" checked={checked} onChange={update} />}
+                control={
+                    <Box color="primary">
+                        <Checkbox
+                            checked={checked}
+                            onChange={update}
+                            color="primary"
+                            style={style}
+                            disabled={showing}
+                        />
+                    </Box>
+                }
                 label={
-                    <Box color={(showing && elixirs.get(answer.assignment).color) || undefined}>
+                    <Box color={(showing && color) || undefined}>
                         <Typography variant="body2">
                             {letterIndex}) {answer.text}
                         </Typography>
