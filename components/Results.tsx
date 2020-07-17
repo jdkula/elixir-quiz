@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import { ElixirType, getElixir, getElixirTypes } from "~/lib/elixir";
-import { Box, Typography } from "@material-ui/core";
+import { Box, Typography, Grid } from "@material-ui/core";
 
 import { Map } from "immutable";
 import { AnswerMap } from "~/pages";
@@ -23,6 +23,10 @@ function getScores(answers: AnswerMap): Map<ElixirType, number> {
         }
     }
 
+    for (const [key, val] of results.entries()) {
+        results = results.set(key, Math.floor(val * 100) / 100); // round to 2 decimal places.
+    }
+
     return results;
 }
 
@@ -40,9 +44,9 @@ function Assignment({ scores }: { scores: Map<ElixirType, number> }): ReactEleme
     if (ties >= 3 || aroundAverage >= 4) {
         const neutral = getElixir("Neutral");
         return (
-            <Typography>
+            <Typography variant="h4">
                 You are elixir-
-                <Box component="span" color={neutral.color}>
+                <Box component="span" color={neutral.color} fontWeight="bold">
                     neutral
                 </Box>
                 !
@@ -55,7 +59,7 @@ function Assignment({ scores }: { scores: Map<ElixirType, number> }): ReactEleme
     const winners = sorted.filter((x) => x.score >= first.score);
     const result = winners.map((out, i) => (
         <>
-            <Box component="span" color={getElixir(out.type).color} key={out.type}>
+            <Box component="span" color={getElixir(out.type).color} key={out.type} fontWeight="bold">
                 {out.type}
             </Box>
             {i < winners.size - 1 && (
@@ -67,24 +71,55 @@ function Assignment({ scores }: { scores: Map<ElixirType, number> }): ReactEleme
     ));
 
     return (
-        <Typography>
-            You are {particle} {result} user!
+        <Typography variant="h4">
+            You are {particle} {result} elixir user!
         </Typography>
+    );
+}
+
+function Breakdown({ scores }: { scores: Map<ElixirType, number> }): ReactElement {
+    const breakdown = getElixirTypes().map((elixir) => (
+        <>
+            <Grid item xs={5} key={elixir.type + 1}>
+                <Box color={elixir.color} textAlign="right">
+                    {elixir.type}
+                </Box>
+            </Grid>
+            <Grid item xs={2} key={elixir.type + 2}>
+                <Box color={elixir.color} textAlign="center">
+                    —
+                </Box>
+            </Grid>
+            <Grid item xs={5} key={elixir.type + 3}>
+                <Box color={elixir.color} textAlign="left">
+                    {scores.get(elixir.type) ?? 0}
+                </Box>
+            </Grid>
+        </>
+    ));
+
+    return (
+        <Grid container direction="row" justify="center">
+            <Box width="auto">
+                <Grid container spacing={0}>
+                    {breakdown}
+                </Grid>
+            </Box>
+        </Grid>
     );
 }
 
 export default function Results({ answers }: Props): ReactElement {
     const scores = getScores(answers);
-    const breakdown = getElixirTypes().map((elixir) => (
-        <Box color={elixir.color} key={elixir.type}>
-            {elixir.type}: {scores.get(elixir.type) ?? 0}
-        </Box>
-    ));
 
     return (
-        <Box>
-            <Assignment scores={scores} />
-            {breakdown}
+        <Box mt={3}>
+            <Box width="100%" textAlign="center">
+                <Assignment scores={scores} />
+            </Box>
+            <Box m={2}>
+                <Breakdown scores={scores} />
+            </Box>
         </Box>
     );
 }
