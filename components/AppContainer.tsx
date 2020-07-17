@@ -9,8 +9,15 @@ import {
     Slide,
     withWidth,
     isWidthDown,
+    makeStyles,
 } from "@material-ui/core";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
+
+const useStyles = makeStyles({
+    noSelect: {
+        userSelect: "none",
+    },
+});
 
 function AppContainer({
     children,
@@ -25,6 +32,7 @@ function AppContainer({
     width?: Breakpoint;
     pinned?: boolean;
 }): ReactElement {
+    const styles = useStyles();
     const trigger = useScrollTrigger();
 
     const canTrigger = isWidthDown("md", width, true);
@@ -33,7 +41,7 @@ function AppContainer({
         <>
             <Slide in={!(canTrigger && trigger) || pinned} appear={false}>
                 <AppBar position="sticky">
-                    <Toolbar>
+                    <Toolbar className={styles.noSelect}>
                         <Box flexGrow={1} ml={2}>
                             <Typography variant="h4">Elixir Quiz</Typography>
                         </Box>
