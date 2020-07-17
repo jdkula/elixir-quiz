@@ -27,7 +27,7 @@ async function populateCache(): Promise<Question[]> {
     return value;
 }
 
-async function getQuestions(): Promise<Question[]> {
+export async function getQuestions(): Promise<Question[]> {
     if (!cache || Date.now() - cacheTime > 1000 * 60 * 60) {
         await populateCache();
     }

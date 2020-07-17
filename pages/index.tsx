@@ -10,8 +10,22 @@ import Head from "next/head";
 import GlobalTimer from "~/components/GlobalTimer";
 import HideToggle from "~/components/HideToggle";
 import Quiz from "~/components/Quiz";
+import { Question, QuestionId, AnswerMap } from "~/lib/quiz";
+import Axios from "axios";
+import { AnswerResult, StatsReqBody } from "~/lib/mongostats";
 
-export type AnswerMap = Map<number, Set<ElixirType>>;
+async function sendResults(answers: AnswerMap) {
+    const collated: AnswerResult[] = [];
+
+    answers.entrySeq().forEach(([qid, aset]) =>
+        collated.push({
+            question: qid,
+            answers: aset.toArray(),
+        }),
+    );
+
+    await Axios.post("/api/stats", { answers: collated, time: GlobalTimer.time() } as StatsReqBody);
+}
 
 const CenterButton = (props: ButtonProps) => (
     <Box textAlign="center" width="100%">
@@ -22,7 +36,7 @@ const CenterButton = (props: ButtonProps) => (
 );
 
 export default function Index(): ReactElement {
-    const [questions, questionsLoading, refresh] = useQuestions(12);
+    const [questions, questionsLoading, error, refresh] = useQuestions(12);
 
     const [showingResults, setShowingResults] = useState(false);
 
@@ -58,6 +72,8 @@ export default function Index(): ReactElement {
                 behavior: "smooth",
             });
         });
+
+        sendResults(answers);
     };
 
     const [timerShown, setTimerShown] = useState(false);
@@ -65,7 +81,7 @@ export default function Index(): ReactElement {
     return (
         <AppContainer
             pinned={timerShown || showingResults}
-            left={
+            right={
                 <HideToggle shown={timerShown} onToggle={setTimerShown}>
                     <GlobalTimer />
                 </HideToggle>

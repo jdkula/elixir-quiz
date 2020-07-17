@@ -1,32 +1,22 @@
-import { Question } from "./quiz";
 import { useState, useEffect } from "react";
 import Axios from "axios";
+import { StatsReply } from "~/pages/api/stats";
 
-export default function useQuestions(
-    select = 12,
-    randomized = true,
-    randomizeQuestions = true,
-): [Question[], boolean, boolean, () => void] {
-    const [questions, setQuestions] = useState<Question[]>([]);
+export default function useStats(): [StatsReply | null, boolean, boolean, () => void] {
+    const [stats, setStats] = useState<StatsReply | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
     const refresh = async () => {
         setLoading(true);
         try {
-            const response = await Axios.get("/api/questions", {
-                params: {
-                    randomized,
-                    randomizeQuestions,
-                    select,
-                },
-            });
+            const response = await Axios.get("/api/stats");
             if (response.status !== 200) {
                 setError(true);
                 setLoading(false);
                 return;
             }
-            setQuestions(response.data);
+            setStats(response.data);
             setLoading(false);
             setError(false);
         } catch (e) {
@@ -39,5 +29,5 @@ export default function useQuestions(
         refresh();
     }, []);
 
-    return [questions, loading, error, refresh];
+    return [stats, loading, error, refresh];
 }

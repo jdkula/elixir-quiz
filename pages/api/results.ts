@@ -1,0 +1,18 @@
+import { NextApiHandler } from "next";
+import mongoresults from "~/lib/mongoresults";
+
+const Results: NextApiHandler = async (req, res) => {
+    if (req.method !== "GET") {
+        return res.status(405).end();
+    }
+    const results = await mongoresults;
+
+    res.json(
+        (await results.find().toArray()).map((x) => {
+            delete x._id;
+            return x;
+        }),
+    );
+};
+
+export default Results;

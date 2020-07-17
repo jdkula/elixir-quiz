@@ -7,7 +7,7 @@ let startTime = 0;
 let stopTime = 0;
 let handle: number | null = null;
 
-type GlobalTimerType = ForwardRefExoticComponent<unknown> & { start: () => void; stop: () => void };
+type GlobalTimerType = ForwardRefExoticComponent<unknown> & { start: () => void; stop: () => void; time: () => number };
 
 const GlobalTimerComponent = forwardRef((_, ref) => {
     const [elapsed, setElapsed] = useState(0);
@@ -59,6 +59,10 @@ GlobalTimer.stop = () => {
     }
 
     stopTime = Date.now();
+};
+
+GlobalTimer.time = () => {
+    return stopTime - startTime;
 };
 
 export default GlobalTimer;

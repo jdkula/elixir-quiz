@@ -1,47 +1,18 @@
-import { ReactElement } from "react";
+import { ReactElement, Fragment } from "react";
 import { ElixirType, getElixir, getElixirTypes } from "~/lib/elixir";
 import { Box, Typography, Grid } from "@material-ui/core";
 
 import { Map } from "immutable";
-import { AnswerMap } from "~/pages";
+import { AnswerMap, getScores, getAssignments } from "~/lib/quiz";
 
 interface Props {
     answers: AnswerMap;
 }
 
-function getScores(answers: AnswerMap): Map<ElixirType, number> {
-    let results = Map<ElixirType, number>([
-        ["Aura", 0],
-        ["Elemental", 0],
-        ["Enchanter", 0],
-        ["Transformer", 0],
-    ]);
-
-    for (const choices of answers.values()) {
-        for (const choice of choices.values()) {
-            results = results.set(choice, results.get(choice) + 1 / choices.size);
-        }
-    }
-
-    for (const [key, val] of results.entries()) {
-        results = results.set(key, Math.floor(val * 100) / 100); // round to 2 decimal places.
-    }
-
-    return results;
-}
-
 function Assignment({ scores }: { scores: Map<ElixirType, number> }): ReactElement {
-    const sorted = scores
-        .entrySeq()
-        .map(([type, score]) => ({ type, score }))
-        .sort((a, b) => b.score - a.score)
-        .toList();
-    const first = sorted.get(0);
-    const average = sorted.reduce((cur, val) => cur + val.score, 0) / sorted.size;
-    const ties = sorted.filter((val) => val.score === first.score).size;
-    const aroundAverage = sorted.filter((val) => Math.abs(val.score - average) < 0.5).size;
+    const winners = getAssignments(scores);
 
-    if (ties >= 3 || aroundAverage >= 4) {
+    if (winners.length === 1 && winners[0] === "Neutral") {
         const neutral = getElixir("Neutral");
         return (
             <Typography variant="h4">
@@ -54,20 +25,14 @@ function Assignment({ scores }: { scores: Map<ElixirType, number> }): ReactEleme
         );
     }
 
-    const particle = getElixir(first.type).particle;
-
-    const winners = sorted.filter((x) => x.score >= first.score);
+    const particle = getElixir(winners[0]).particle;
     const result = winners.map((out, i) => (
-        <>
-            <Box component="span" color={getElixir(out.type).color} key={out.type} fontWeight="bold">
-                {out.type}
+        <Fragment key={out}>
+            <Box component="span" color={getElixir(out).color} fontWeight="bold">
+                {out}
             </Box>
-            {i < winners.size - 1 && (
-                <Box key={`box-${i}`} component="span">
-                    {" or "}
-                </Box>
-            )}
-        </>
+            {i < winners.length - 1 && <Box component="span"> or </Box>}
+        </Fragment>
     ));
 
     return (

@@ -21,13 +21,13 @@ const useStyles = makeStyles({
 
 function AppContainer({
     children,
-    left,
+    right,
     below,
     width,
     pinned,
 }: {
     children: ReactNode;
-    left?: ReactNode;
+    right?: ReactNode;
     below?: ReactNode;
     width?: Breakpoint;
     pinned?: boolean;
@@ -45,7 +45,7 @@ function AppContainer({
                         <Box flexGrow={1} ml={2}>
                             <Typography variant="h4">Elixir Quiz</Typography>
                         </Box>
-                        {left}
+                        {right}
                     </Toolbar>
                     {below}
                 </AppBar>

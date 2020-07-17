@@ -6,6 +6,7 @@
  */
 import { Question, Answer } from "./quiz";
 import { getElixir } from "./elixir";
+import md5 from "md5";
 
 /**
  * Given a [definition] of the form:
@@ -73,6 +74,7 @@ export function parseFlashcard(flashcard: Element): Question {
     }
 
     return {
+        id: md5(question),
         question,
         answers,
     };

@@ -1,10 +1,9 @@
 import { ReactElement } from "react";
-import { Question } from "~/lib/quiz";
+import { Question, QuestionId, AnswerMap } from "~/lib/quiz";
 import QuizContainer from "./QuizContainer";
 import { GridListTile } from "@material-ui/core";
 import QuestionCard from "./QuestionCard";
 import AnswerOption from "./AnswerOption";
-import { AnswerMap } from "~/pages";
 import { ElixirType } from "~/lib/elixir";
 
 import { Set } from "immutable";
@@ -19,12 +18,12 @@ interface Props {
 }
 
 export default function Quiz({ questions, showingResults, answers, setAnswers, started }: Props): ReactElement {
-    const getSelect = (questionIndex: number) => (type: ElixirType) => {
-        setAnswers(answers.set(questionIndex, (answers.get(questionIndex) ?? Set()).add(type)));
+    const getSelect = (question: QuestionId) => (type: ElixirType) => {
+        setAnswers(answers.set(question, (answers.get(question) ?? Set()).add(type)));
     };
 
-    const getDeselect = (questionIndex: number) => (type: ElixirType) => {
-        setAnswers(answers.set(questionIndex, (answers.get(questionIndex) ?? Set()).delete(type)));
+    const getDeselect = (question: QuestionId) => (type: ElixirType) => {
+        setAnswers(answers.set(question, (answers.get(question) ?? Set()).delete(type)));
     };
 
     return (
@@ -38,8 +37,8 @@ export default function Quiz({ questions, showingResults, answers, setAnswers, s
                                     key={i + " " + j}
                                     answer={a}
                                     index={j}
-                                    select={getSelect(i)}
-                                    deselect={getDeselect(i)}
+                                    select={getSelect(q.id)}
+                                    deselect={getDeselect(q.id)}
                                     showing={showingResults}
                                 />
                             ))}
