@@ -8,6 +8,7 @@ import {
     Typography,
     ThemeProvider,
     createMuiTheme,
+    Avatar,
 } from "@material-ui/core";
 import Head from "next/head";
 
@@ -34,8 +35,8 @@ export default function AppContainer({ children, left }: { children: ReactNode; 
             </Head>
             <AppBar position="sticky">
                 <Toolbar>
-                    <Box flexGrow={1}>
-                        <Typography variant="h5">Elixir Quiz</Typography>
+                    <Box flexGrow={1} ml={2}>
+                        <Typography variant="h4">Elixir Quiz</Typography>
                     </Box>
                     {left}
                 </Toolbar>
