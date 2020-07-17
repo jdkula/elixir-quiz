@@ -1,45 +1,81 @@
 import { ReactElement } from "react";
-import { ElixirType } from "~/lib/elixir";
+import { ElixirType, getElixir, getElixirTypes } from "~/lib/elixir";
 import { Box, Typography } from "@material-ui/core";
-import useElixirs from "~/lib/useElixirs";
 
 import { Map } from "immutable";
+import { AnswerMap } from "~/pages";
 
 interface Props {
-    scores: Map<ElixirType, number>;
+    answers: AnswerMap;
 }
 
-export default function Results({ scores }: Props): ReactElement {
-    const [elixirMap, loading] = useElixirs();
+function getScores(answers: AnswerMap): Map<ElixirType, number> {
+    let results = Map<ElixirType, number>([
+        ["Aura", 0],
+        ["Elemental", 0],
+        ["Enchanter", 0],
+        ["Transformer", 0],
+    ]);
 
-    if (loading) return null;
-    const elixirs = [...elixirMap.keys()].sort().map((type) => elixirMap.get(type));
+    for (const choices of answers.values()) {
+        for (const choice of choices.values()) {
+            results = results.set(choice, results.get(choice) + 1 / choices.size);
+        }
+    }
 
-    const sorted = elixirs
-        .map((elixir) => ({ type: elixir.type, score: scores.get(elixir.type) ?? 0 }))
-        .sort((a, b) => b.score - a.score);
+    return results;
+}
 
-    const particle = elixirMap.get(sorted[0].type).particle;
-    const result = sorted
-        .filter((x) => x.score >= sorted[0].score)
-        .map((out) => (
-            <Box component="span" color={elixirMap.get(out.type).color} key={out.type}>
-                {out.type}
-            </Box>
-        ));
+function Assignment({ scores }: { scores: Map<ElixirType, number> }): ReactElement {
+    const sorted = scores
+        .entrySeq()
+        .map(([type, score]) => ({ type, score }))
+        .sort((a, b) => b.score - a.score)
+        .toList();
+    const first = sorted.get(0);
+    const average = sorted.reduce((cur, val) => cur + val.score, 0) / sorted.size;
+    const ties = sorted.filter((val) => val.score === first.score).size;
+    const aroundAverage = sorted.filter((val) => Math.abs(val.score - average) < 0.5).size;
 
-    const len = result.length;
-    for (let i = 1; i < len; i++) {
-        result.splice(
-            i * 2 - 1,
-            0,
-            <Box key={`box-${i}`} component="span">
-                {" or "}
-            </Box>,
+    if (ties >= 3 || aroundAverage >= 4) {
+        const neutral = getElixir("Neutral");
+        return (
+            <Typography>
+                You are elixir-
+                <Box component="span" color={neutral.color}>
+                    neutral
+                </Box>
+                !
+            </Typography>
         );
     }
 
-    const breakdown = elixirs.map((elixir) => (
+    const particle = getElixir(first.type).particle;
+
+    const winners = sorted.filter((x) => x.score >= first.score);
+    const result = winners.map((out, i) => (
+        <>
+            <Box component="span" color={getElixir(out.type).color} key={out.type}>
+                {out.type}
+            </Box>
+            {i < winners.size - 1 && (
+                <Box key={`box-${i}`} component="span">
+                    {" or "}
+                </Box>
+            )}
+        </>
+    ));
+
+    return (
+        <Typography>
+            You are {particle} {result} user!
+        </Typography>
+    );
+}
+
+export default function Results({ answers }: Props): ReactElement {
+    const scores = getScores(answers);
+    const breakdown = getElixirTypes().map((elixir) => (
         <Box color={elixir.color} key={elixir.type}>
             {elixir.type}: {scores.get(elixir.type) ?? 0}
         </Box>
@@ -47,9 +83,7 @@ export default function Results({ scores }: Props): ReactElement {
 
     return (
         <Box>
-            <Typography>
-                You are {particle} {result}
-            </Typography>
+            <Assignment scores={scores} />
             {breakdown}
         </Box>
     );
