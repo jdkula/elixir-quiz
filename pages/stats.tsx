@@ -157,7 +157,7 @@ function Stats(): ReactElement {
                             <StatsAnd />
                         </Typography>
                         <Typography className={styles.transformation}>
-                            Transformation recieved {stats.averageEnchantmentScore} points.
+                            Transformation recieved {stats.averageTransformationScore} points.
                         </Typography>
                     </StatsPoint>
                 </Container>
