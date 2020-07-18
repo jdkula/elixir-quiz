@@ -60,7 +60,6 @@ const StatsGET: NextApiHandler = async (req, res) => {
                     averageAuraScore: { $avg: "$auraScore" },
                     averageEnchantmentScore: { $avg: "$enchantmentScore" },
                     averageElementalScore: { $avg: "$elementalScore" },
-
                 },
             },
         ])
@@ -87,7 +86,7 @@ const StatsGET: NextApiHandler = async (req, res) => {
     };
     delete clean._id;
 
-    const count = await results.count();
+    const count = await results.countDocuments();
     clean.totalResults = count;
 
     res.json(clean);
