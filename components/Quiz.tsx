@@ -28,24 +28,25 @@ export default function Quiz({ questions, showingResults, answers, setAnswers, s
 
     return (
         <QuizContainer>
-            {questions.map((q, i) => (
-                <GridListTile key={q.question}>
-                    <DelayedSlide in={started} delay={i * 50} direction="up" mountOnEnter unmountOnExit>
-                        <QuestionCard question={q} index={i}>
-                            {q.answers.map((a, j) => (
-                                <AnswerOption
-                                    key={i + " " + j}
-                                    answer={a}
-                                    index={j}
-                                    select={getSelect(q.id)}
-                                    deselect={getDeselect(q.id)}
-                                    showing={showingResults}
-                                />
-                            ))}
-                        </QuestionCard>
-                    </DelayedSlide>
-                </GridListTile>
-            ))}
+            {started &&
+                questions.map((q, i) => (
+                    <GridListTile key={q.question}>
+                        <DelayedSlide in={started} delay={i * 50} direction="up" mountOnEnter unmountOnExit>
+                            <QuestionCard question={q} index={i}>
+                                {q.answers.map((a, j) => (
+                                    <AnswerOption
+                                        key={i + " " + j}
+                                        answer={a}
+                                        index={j}
+                                        select={getSelect(q.id)}
+                                        deselect={getDeselect(q.id)}
+                                        showing={showingResults}
+                                    />
+                                ))}
+                            </QuestionCard>
+                        </DelayedSlide>
+                    </GridListTile>
+                ))}
         </QuizContainer>
     );
 }

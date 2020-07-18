@@ -1,16 +1,15 @@
 import { ReactElement, useState } from "react";
 import useQuestions from "~/lib/useQuestions";
 import { Button, Box, ButtonProps, LinearProgress, Collapse } from "@material-ui/core";
-import { ElixirType } from "~/lib/elixir";
 import AppContainer from "~/components/AppContainer";
 import Results from "~/components/Results";
 
-import { Map, Set } from "immutable";
+import { Map } from "immutable";
 import Head from "next/head";
 import GlobalTimer from "~/components/GlobalTimer";
 import HideToggle from "~/components/HideToggle";
 import Quiz from "~/components/Quiz";
-import { Question, QuestionId, AnswerMap } from "~/lib/quiz";
+import { AnswerMap } from "~/lib/quiz";
 import Axios from "axios";
 import { AnswerResult, StatsReqBody } from "~/lib/mongostats";
 import { useRouter } from "next/router";
@@ -38,7 +37,7 @@ const CenterButton = (props: ButtonProps & { width?: string }) => (
 );
 
 export default function Index(): ReactElement {
-    const [questions, questionsLoading, error, refresh] = useQuestions(12);
+    const [questions, questionsLoading, , refresh] = useQuestions(12);
 
     const [showingResults, setShowingResults] = useState(false);
 
@@ -138,8 +137,8 @@ export default function Index(): ReactElement {
             <Box my={2} />
             {(!started || showingResults) && (
                 <Link href="/stats">
-                    <CenterButton width="5rem" variant="outlined" color="default" onClick={() => router.push("/stats")}>
-                        Stats
+                    <CenterButton width="8rem" variant="outlined" color="default" onClick={() => router.push("/stats")}>
+                        View Stats
                     </CenterButton>
                 </Link>
             )}
