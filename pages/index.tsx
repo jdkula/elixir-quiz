@@ -4,7 +4,7 @@ import { Button, Box, ButtonProps, LinearProgress, Collapse } from "@material-ui
 import AppContainer from "~/components/AppContainer";
 import Results from "~/components/Results";
 
-import { Map } from "immutable";
+import { Map, Set } from "immutable";
 import Head from "next/head";
 import GlobalTimer from "~/components/GlobalTimer";
 import HideToggle from "~/components/HideToggle";
@@ -25,19 +25,23 @@ async function sendResults(answers: AnswerMap) {
         }),
     );
 
-    await Axios.post("/api/stats", { answers: collated, time: GlobalTimer.time() } as StatsReqBody);
+    await Axios.post("/api/stats", {
+        answers: collated,
+        time: GlobalTimer.time(),
+        date: new Date(),
+    } as StatsReqBody);
 }
 
 const CenterButton = (props: ButtonProps & { width?: string }) => (
     <Box textAlign="center" width="100%">
-        <Box clone width={props.width || "10rem"}>
+        <Box clone minWidth={(props.width || "10rem") + " !important"}>
             <Button {...props} />
         </Box>
     </Box>
 );
 
 export default function Index(): ReactElement {
-    const [questions, questionsLoading, , refresh] = useQuestions(12);
+    const [questions, questionsLoading, error, refresh] = useQuestions(12);
 
     const [showingResults, setShowingResults] = useState(false);
 
@@ -49,6 +53,7 @@ export default function Index(): ReactElement {
 
     const start = () => {
         setStarted(!started);
+        setAnswers(Map(questions.map((q) => [q.id, Set()]))); // initialize with all questions
         GlobalTimer.start();
     };
 
@@ -90,8 +95,12 @@ export default function Index(): ReactElement {
                 </HideToggle>
             }
             below={
-                <Collapse in={questionsLoading}>
-                    <LinearProgress />
+                <Collapse in={questionsLoading || error}>
+                    <LinearProgress
+                        color={error ? "secondary" : "primary"}
+                        variant={error ? "determinate" : "indeterminate"}
+                        value={error ? 100 : undefined}
+                    />
                 </Collapse>
             }
         >
@@ -102,12 +111,15 @@ export default function Index(): ReactElement {
                 {!showingResults ? (
                     <CenterButton
                         onClick={start}
-                        disabled={questionsLoading || started}
+                        disabled={questionsLoading || started || error}
                         variant="outlined"
                         color="secondary"
                         size="large"
                     >
-                        {(questionsLoading && "Loading...") || (started && "Go!") || "Start!"}
+                        {(questionsLoading && "Loading...") ||
+                            (error && "Error loading questions!") ||
+                            (started && "Go!") ||
+                            "Start!"}
                     </CenterButton>
                 ) : (
                     <CenterButton onClick={restart} variant="outlined" color="primary" size="large">

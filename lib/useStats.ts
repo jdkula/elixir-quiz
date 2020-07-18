@@ -9,6 +9,7 @@ export default function useStats(): [StatsReply | null, boolean, boolean, () => 
 
     const refresh = async () => {
         setLoading(true);
+        setError(false);
         try {
             const response = await Axios.get("/api/stats");
             if (response.status !== 200) {
@@ -18,7 +19,6 @@ export default function useStats(): [StatsReply | null, boolean, boolean, () => 
             }
             setStats(response.data);
             setLoading(false);
-            setError(false);
         } catch (e) {
             setError(true);
             setLoading(false);

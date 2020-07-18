@@ -8,7 +8,7 @@ const Results: NextApiHandler = async (req, res) => {
     const results = await mongoresults;
 
     res.json(
-        (await results.find().toArray()).map((x) => {
+        (await results.find().sort({ date: -1 }).toArray()).map((x) => {
             delete x._id;
             return x;
         }),

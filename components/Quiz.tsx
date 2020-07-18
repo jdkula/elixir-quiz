@@ -15,9 +15,17 @@ interface Props {
     answers: AnswerMap;
     setAnswers: (answers: AnswerMap) => void;
     started: boolean;
+    isModal?: boolean;
 }
 
-export default function Quiz({ questions, showingResults, answers, setAnswers, started }: Props): ReactElement {
+export default function Quiz({
+    questions,
+    showingResults,
+    answers,
+    setAnswers,
+    started,
+    isModal,
+}: Props): ReactElement {
     const getSelect = (question: QuestionId) => (type: ElixirType) => {
         setAnswers(answers.set(question, (answers.get(question) ?? Set()).add(type)));
     };
@@ -27,7 +35,7 @@ export default function Quiz({ questions, showingResults, answers, setAnswers, s
     };
 
     return (
-        <QuizContainer>
+        <QuizContainer cols={isModal ? 1 : undefined}>
             {started &&
                 questions.map((q, i) => (
                     <GridListTile key={q.question}>
@@ -41,6 +49,7 @@ export default function Quiz({ questions, showingResults, answers, setAnswers, s
                                         select={getSelect(q.id)}
                                         deselect={getDeselect(q.id)}
                                         showing={showingResults}
+                                        initialChecked={answers.get(q.id)?.has(a.assignment) ?? undefined}
                                     />
                                 ))}
                             </QuestionCard>

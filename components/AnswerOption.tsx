@@ -7,13 +7,14 @@ interface Props {
     answer: Answer;
     index: number;
     showing?: boolean;
+    initialChecked?: boolean;
 
     select: (type: ElixirType) => void;
     deselect: (type: ElixirType) => void;
 }
 
-export default function AnswerOption({ answer, index, showing, select, deselect }: Props): ReactElement {
-    const [checked, setChecked] = useState(false);
+export default function AnswerOption({ answer, index, showing, select, deselect, initialChecked }: Props): ReactElement {
+    const [checked, setChecked] = useState(initialChecked ?? false);
 
     const update = (e: ChangeEvent<HTMLInputElement>) => {
         const nowChecked = e.target.checked;

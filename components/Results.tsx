@@ -44,23 +44,23 @@ function Assignment({ scores }: { scores: Map<ElixirType, number> }): ReactEleme
 
 function Breakdown({ scores }: { scores: Map<ElixirType, number> }): ReactElement {
     const breakdown = getElixirTypes().map((elixir) => (
-        <>
-            <Grid item xs={5} key={elixir.type + 1}>
+        <Fragment key={elixir.type}>
+            <Grid item xs={5}>
                 <Box color={elixir.color} textAlign="right">
                     {elixir.type}
                 </Box>
             </Grid>
-            <Grid item xs={2} key={elixir.type + 2}>
+            <Grid item xs={2}>
                 <Box color={elixir.color} textAlign="center">
                     —
                 </Box>
             </Grid>
-            <Grid item xs={5} key={elixir.type + 3}>
+            <Grid item xs={5}>
                 <Box color={elixir.color} textAlign="left">
                     {scores.get(elixir.type) ?? 0}
                 </Box>
             </Grid>
-        </>
+        </Fragment>
     ));
 
     return (

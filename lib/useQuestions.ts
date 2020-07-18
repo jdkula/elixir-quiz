@@ -13,6 +13,7 @@ export default function useQuestions(
 
     const refresh = async () => {
         setLoading(true);
+        setError(false);
         try {
             const response = await Axios.get("/api/questions", {
                 params: {
@@ -28,7 +29,6 @@ export default function useQuestions(
             }
             setQuestions(response.data);
             setLoading(false);
-            setError(false);
         } catch (e) {
             setError(true);
             setLoading(false);

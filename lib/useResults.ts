@@ -10,6 +10,7 @@ export default function useResults(): [FullResult[], boolean, boolean, () => voi
 
     const refresh = async () => {
         setLoading(true);
+        setError(false);
         try {
             const response = await Axios.get("/api/results");
             if (response.status !== 200) {
@@ -19,7 +20,6 @@ export default function useResults(): [FullResult[], boolean, boolean, () => voi
             }
             setStats(response.data);
             setLoading(false);
-            setError(false);
         } catch (e) {
             setError(true);
             setLoading(false);

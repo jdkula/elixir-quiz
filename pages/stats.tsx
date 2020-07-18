@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from "react";
+import { ReactElement, ReactNode, useState } from "react";
 import useStats from "~/lib/useStats";
 import AppContainer from "~/components/AppContainer";
 import moment from "moment";
@@ -11,6 +11,11 @@ import {
     makeStyles,
     Typography,
     withStyles,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    GridList,
 } from "@material-ui/core";
 
 import Link from "next/link";
@@ -18,6 +23,12 @@ import { useRouter } from "next/router";
 import { getElixir } from "~/lib/elixir";
 import useResults from "~/lib/useResults";
 import Head from "next/head";
+import { FullResult } from "~/lib/mongostats";
+import Quiz from "~/components/Quiz";
+import useQuestions from "~/lib/useQuestions";
+import { AnswerMap } from "~/lib/quiz";
+import { Map, Set } from "immutable";
+import Results from "~/components/Results";
 
 const useStyles = makeStyles({
     aura: {
@@ -156,12 +167,82 @@ function Stats(): ReactElement {
     );
 }
 
+function Result({ result }: { result: FullResult }): ReactElement {
+    const classes = useStyles();
+    const [modalOpen, setModal] = useState(false);
+    const [questions, loading, error] = useQuestions(null, false, false);
+
+    const selectedQuestions = questions.filter((q) => result.answers.map((ans) => ans.question).includes(q.id));
+    const answerMap: AnswerMap = Map(result.answers.map((answer) => [answer.question, Set(answer.answers)]));
+
+    const duration = moment.duration(result.time);
+    const durationFormatted = `${duration.minutes()}m ${duration.seconds()}s`;
+
+    const time = moment(result.date);
+    const timeFormatted = time.format("dddd, MMM Do [at] h:mm a");
+
+    return (
+        <span>
+            {result.result.map((type, i) => (
+                <Button
+                    key={i}
+                    className={classes[type.toLowerCase()]}
+                    onClick={() => setModal(true)}
+                    variant="outlined"
+                >
+                    {type}
+                    {i < result.result.length - 1 && (
+                        <>
+                            <StatsAnd />,
+                        </>
+                    )}
+                </Button>
+            ))}
+            <Dialog open={modalOpen} onClose={() => setModal(false)}>
+                <Collapse in={loading || error}>
+                    <LinearProgress
+                        color={error ? "secondary" : "primary"}
+                        variant={error ? "determinate" : "indeterminate"}
+                        value={error ? 100 : undefined}
+                    />
+                </Collapse>
+                <DialogTitle>Result Details</DialogTitle>
+                <DialogContent dividers>
+                    <Box textAlign="center">
+                        <Typography>
+                            This quiz was completed in {durationFormatted} on {timeFormatted}
+                        </Typography>
+                    </Box>
+                    <Results answers={answerMap} />
+                    <Box textAlign="center">
+                        {loading && <Typography variant="overline">Loading questions...</Typography>}
+                        {error && <Typography variant="overline">Failed to load questions</Typography>}
+                    </Box>
+                    {!error && !loading && (
+                        <Quiz
+                            showingResults={true}
+                            started={true}
+                            setAnswers={() => {
+                                void 0; // do nothing.
+                            }}
+                            questions={selectedQuestions}
+                            answers={answerMap}
+                            isModal
+                        />
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setModal(false)}>Close</Button>
+                </DialogActions>
+            </Dialog>
+        </span>
+    );
+}
+
 export default function StatsPage(): ReactElement {
     const [, loading] = useStats();
     const [results, resultsLoading] = useResults();
     const router = useRouter();
-
-    const classes = useStyles();
 
     return (
         <AppContainer
@@ -181,31 +262,18 @@ export default function StatsPage(): ReactElement {
             </Head>
             <Stats />
             {!resultsLoading && (
-                <Typography>
-                    The last {Math.min(results.length, 5)} results were:{" "}
-                    {results
-                        .slice(0, 5)
-                        .map((v) => v.result)
-                        .map((res, i, arr) => (
-                            <StatsPoint key={i}>
-                                {res.map((type, j) => (
-                                    <Typography
-                                        component="span"
-                                        key={i + " " + j}
-                                        className={classes[type.toLowerCase()]}
-                                    >
-                                        {type}
-                                        {j < res.length - 1 && ", "}
-                                    </Typography>
-                                ))}
-                                <StatsAnd>
-                                    {i < arr.length - 1 && ", "}
-                                    {i === arr.length - 2 && "and "}
-                                    {i === arr.length - 1 && "."}
-                                </StatsAnd>
-                            </StatsPoint>
+                <Box>
+                    <Typography>Here are the latest results! </Typography>
+                    <Box m={2} display="flex" flexDirection="column" width="100%" alignItems="start">
+                        {results.map((res, i, arr) => (
+                            <Box component="div" m={1} key={i}>
+                                <StatsPoint>
+                                    <Result result={res} />
+                                </StatsPoint>
+                            </Box>
                         ))}
-                </Typography>
+                    </Box>
+                </Box>
             )}
         </AppContainer>
     );

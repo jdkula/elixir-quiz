@@ -101,6 +101,7 @@ const StatsPOST: NextApiHandler = async (req, res) => {
 
     const stats: StatsType = {
         ...statsSubmission,
+        date: new Date(statsSubmission.date),
         scores: scoreMap.toJSON() as any,
         result: winners,
     };

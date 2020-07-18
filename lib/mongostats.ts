@@ -10,6 +10,7 @@ export interface AnswerResult {
 export interface StatsReqBody {
     answers: AnswerResult[];
     time: number;
+    date: Date;
 }
 
 export interface FullResult extends StatsReqBody {
