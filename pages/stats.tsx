@@ -6,7 +6,6 @@ import {
     Button,
     Collapse,
     LinearProgress,
-    Grid,
     Box,
     Container,
     makeStyles,
@@ -64,7 +63,7 @@ function wasWere(quantity: number): "was" | "were" {
 
 function Stats(): ReactElement {
     const styles = useStyles();
-    const [stats, loading, error, refresh] = useStats();
+    const [stats, loading] = useStats();
 
     if (loading) {
         return null;
@@ -157,7 +156,7 @@ function Stats(): ReactElement {
 }
 
 export default function StatsPage(): ReactElement {
-    const [stats, loading, error, refresh] = useStats();
+    const [, loading] = useStats();
     const [results, resultsLoading] = useResults();
     const router = useRouter();
 
@@ -177,27 +176,33 @@ export default function StatsPage(): ReactElement {
             }
         >
             <Stats />
-            <Typography>
-                The last {Math.min(results.length, 5)} results were:{" "}
-                {results
-                    .slice(0, 5)
-                    .map((v) => v.result)
-                    .map((res, i, arr) => (
-                        <StatsPoint key={i}>
-                            {res.map((type, j) => (
-                                <Typography component="span" key={i + " " + j} className={classes[type.toLowerCase()]}>
-                                    {type}
-                                    {j < res.length - 1 && ", "}
-                                </Typography>
-                            ))}
-                            <StatsAnd>
-                                {i < arr.length - 1 && ", "}
-                                {i === arr.length - 2 && "and "}
-                                {i === arr.length - 1 && "."}
-                            </StatsAnd>
-                        </StatsPoint>
-                    ))}
-            </Typography>
+            {!resultsLoading && (
+                <Typography>
+                    The last {Math.min(results.length, 5)} results were:{" "}
+                    {results
+                        .slice(0, 5)
+                        .map((v) => v.result)
+                        .map((res, i, arr) => (
+                            <StatsPoint key={i}>
+                                {res.map((type, j) => (
+                                    <Typography
+                                        component="span"
+                                        key={i + " " + j}
+                                        className={classes[type.toLowerCase()]}
+                                    >
+                                        {type}
+                                        {j < res.length - 1 && ", "}
+                                    </Typography>
+                                ))}
+                                <StatsAnd>
+                                    {i < arr.length - 1 && ", "}
+                                    {i === arr.length - 2 && "and "}
+                                    {i === arr.length - 1 && "."}
+                                </StatsAnd>
+                            </StatsPoint>
+                        ))}
+                </Typography>
+            )}
         </AppContainer>
     );
 }
