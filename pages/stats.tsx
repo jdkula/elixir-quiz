@@ -262,9 +262,9 @@ export default function StatsPage(): ReactElement {
             </Head>
             <Stats />
             {!resultsLoading && (
-                <Box>
+                <Container>
                     <Typography>Here are the latest results! </Typography>
-                    <Box m={2} display="flex" flexDirection="column" width="100%" alignItems="start">
+                    <Box m={2} display="flex" flexDirection="column" width="min-content" alignItems="center">
                         {results.map((res, i, arr) => (
                             <Box component="div" m={1} key={i}>
                                 <StatsPoint>
@@ -273,7 +273,7 @@ export default function StatsPage(): ReactElement {
                             </Box>
                         ))}
                     </Box>
-                </Box>
+                </Container>
             )}
         </AppContainer>
     );
