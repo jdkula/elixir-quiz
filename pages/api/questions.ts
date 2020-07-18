@@ -4,6 +4,11 @@ import { JSDOM } from "jsdom";
 import { parseQuizlet } from "~/lib/quizlet";
 import { Question } from "~/lib/quiz";
 import { randomized } from "~/lib/util";
+import mongoresults from "~/lib/mongoresults";
+import { FullResult } from "~/lib/mongostats";
+import { Set } from "immutable";
+
+import { ObjectId } from "mongodb";
 
 let cache: Question[] | null = null;
 let cacheTime = 0;
@@ -36,12 +41,27 @@ export async function getQuestions(): Promise<Question[]> {
 }
 
 const Questions: NextApiHandler = async (req, res) => {
+    const forResult = req.query.forResult as string | undefined;
+
     const random = (req.query.randomized as string)?.toLowerCase()?.trim()?.includes("true") === true;
     const randomizeQuestions =
         (req.query.randomizeQuestions as string)?.toLowerCase()?.trim()?.includes("true") === true;
     const selectStr = (req.query.select as string)?.toLowerCase()?.trim();
     const selected = (selectStr && Number.parseInt(selectStr)) || null;
     let questions = await getQuestions();
+
+    if (forResult) {
+        const results = await mongoresults;
+        const result = (await results.findOne({ _id: new ObjectId(forResult) })) as FullResult | null | undefined;
+        if (!result) {
+            res.status(404).end();
+            return;
+        }
+
+        const questionSet = Set(result.answers.map((res) => res.question));
+
+        questions = questions.filter((q) => questionSet.has(q.id));
+    }
 
     if (random) questions = randomized(questions);
     if (selected) questions = questions.splice(0, selected);

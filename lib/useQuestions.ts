@@ -6,6 +6,8 @@ export default function useQuestions(
     select = 12,
     randomized = true,
     randomizeQuestions = true,
+    forResult = undefined,
+    lazy = false,
 ): [Question[], boolean, boolean, () => void] {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [loading, setLoading] = useState(true);
@@ -20,6 +22,7 @@ export default function useQuestions(
                     randomized,
                     randomizeQuestions,
                     select,
+                    forResult,
                 },
             });
             if (response.status !== 200) {
@@ -36,7 +39,9 @@ export default function useQuestions(
     };
 
     useEffect(() => {
-        refresh();
+        if (!lazy) {
+            refresh();
+        }
     }, []);
 
     return [questions, loading, error, refresh];

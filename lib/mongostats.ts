@@ -16,6 +16,7 @@ export interface StatsReqBody {
 export interface FullResult extends StatsReqBody {
     scores: Omit<{ [Type in ElixirType]: number }, "Neutral">;
     result: ElixirType[];
+    _id: string;
 }
 
 const mongostats = mongodb.then((db) => db.collection("stats"));

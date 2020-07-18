@@ -15,7 +15,6 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    GridList,
 } from "@material-ui/core";
 
 import Link from "next/link";
@@ -170,9 +169,8 @@ function Stats(): ReactElement {
 function Result({ result }: { result: FullResult }): ReactElement {
     const classes = useStyles();
     const [modalOpen, setModal] = useState(false);
-    const [questions, loading, error] = useQuestions(null, false, false);
+    const [questions, loading, error, load] = useQuestions(null, false, false, result._id);
 
-    const selectedQuestions = questions.filter((q) => result.answers.map((ans) => ans.question).includes(q.id));
     const answerMap: AnswerMap = Map(result.answers.map((answer) => [answer.question, Set(answer.answers)]));
 
     const duration = moment.duration(result.time);
@@ -181,15 +179,15 @@ function Result({ result }: { result: FullResult }): ReactElement {
     const time = moment(result.date);
     const timeFormatted = time.format("dddd, MMM Do [at] h:mm a");
 
+    const openModal = () => {
+        setModal(true);
+        load();
+    };
+
     return (
         <span>
             {result.result.map((type, i) => (
-                <Button
-                    key={i}
-                    className={classes[type.toLowerCase()]}
-                    onClick={() => setModal(true)}
-                    variant="outlined"
-                >
+                <Button key={i} className={classes[type.toLowerCase()]} onClick={openModal} variant="outlined">
                     {type}
                     {i < result.result.length - 1 && (
                         <>
@@ -225,7 +223,7 @@ function Result({ result }: { result: FullResult }): ReactElement {
                             setAnswers={() => {
                                 void 0; // do nothing.
                             }}
-                            questions={selectedQuestions}
+                            questions={questions}
                             answers={answerMap}
                             isModal
                         />
@@ -265,7 +263,7 @@ export default function StatsPage(): ReactElement {
                 <Container>
                     <Typography>Here are the latest results! </Typography>
                     <Box m={2} display="flex" flexDirection="column" width="min-content" alignItems="center">
-                        {results.map((res, i, arr) => (
+                        {results.map((res, i) => (
                             <Box component="div" m={1} key={i}>
                                 <StatsPoint>
                                     <Result result={res} />
