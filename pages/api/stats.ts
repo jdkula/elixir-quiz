@@ -3,6 +3,8 @@ import mongoresults from "~/lib/mongoresults";
 import { StatsReqBody, FullResult as StatsType } from "~/lib/mongostats";
 import { getScores, getAssignments } from "~/lib/quiz";
 import { Map, Set } from "immutable";
+import { numUnansweredQuestionsExpr } from "./results";
+import { ElixirType } from "~/lib/elixir";
 
 export interface StatsReply {
     totalTime: number;
@@ -26,16 +28,19 @@ export interface StatsReply {
 const StatsGET: NextApiHandler = async (req, res) => {
     const results = await mongoresults;
 
+    const has = (type: ElixirType) => ({ $cond: [{ $in: [type, "$result"] }, 1, 0] });
+
     const winnerAggregate = await results
         .aggregate([
             {
                 $project: {
                     time: true,
-                    hasTransformation: { $cond: [{ $in: ["Transformation", "$result"] }, 1, 0] },
-                    hasAura: { $cond: [{ $in: ["Aura", "$result"] }, 1, 0] },
-                    hasEnchantment: { $cond: [{ $in: ["Enchantment", "$result"] }, 1, 0] },
-                    hasElemental: { $cond: [{ $in: ["Elemental", "$result"] }, 1, 0] },
-                    hasNeutral: { $cond: [{ $in: ["Neutral", "$result"] }, 1, 0] },
+                    numUnansweredQuestions: numUnansweredQuestionsExpr,
+                    hasTransformation: has("Transformation"),
+                    hasAura: has("Aura"),
+                    hasEnchantment: has("Enchantment"),
+                    hasElemental: has("Elemental"),
+                    hasNeutral: has("Neutral"),
                     transformationScore: "$scores.Transformation",
                     auraScore: "$scores.Aura",
                     enchantmentScore: "$scores.Enchantment",
@@ -43,8 +48,16 @@ const StatsGET: NextApiHandler = async (req, res) => {
                 },
             },
             {
+                $match: {
+                    $expr: {
+                        $and: [{ $lt: ["$numUnansweredQuestions", 3] }, { $gt: ["$time", 10 * 1000] }],
+                    },
+                },
+            },
+            {
                 $group: {
                     _id: null,
+                    totalResults: { $sum: 1 },
                     totalTime: { $sum: "$time" },
                     averageTime: { $avg: "$time" },
                     numTransformation: { $sum: "$hasTransformation" },
@@ -86,9 +99,6 @@ const StatsGET: NextApiHandler = async (req, res) => {
     };
     delete clean._id;
 
-    const count = await results.countDocuments();
-    clean.totalResults = count;
-
     res.json(clean);
 };
 
@@ -99,7 +109,7 @@ const StatsPOST: NextApiHandler = async (req, res) => {
     const scoreMap = getScores(Map(statsSubmission.answers.map((res) => [res.question, Set(res.answers)])));
     const winners = getAssignments(scoreMap);
 
-    const stats: StatsType = {
+    const stats: Omit<StatsType, "_id"> = {
         ...statsSubmission,
         date: new Date(statsSubmission.date),
         scores: scoreMap.toJSON() as any,
