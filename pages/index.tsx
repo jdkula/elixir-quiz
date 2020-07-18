@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { ReactElement, useState, forwardRef } from "react";
 import useQuestions from "~/lib/useQuestions";
 import { Button, Box, ButtonProps, LinearProgress, Collapse } from "@material-ui/core";
 import AppContainer from "~/components/AppContainer";
@@ -32,13 +32,13 @@ async function sendResults(answers: AnswerMap) {
     } as StatsReqBody);
 }
 
-const CenterButton = (props: ButtonProps & { width?: string }) => (
+const CenterButton = forwardRef<HTMLButtonElement, ButtonProps & { width?: string }>((props, ref) => (
     <Box textAlign="center" width="100%">
         <Box clone minWidth={(props.width || "10rem") + " !important"}>
-            <Button {...props} />
+            <Button ref={ref} {...props} />
         </Box>
     </Box>
-);
+));
 
 export default function Index(): ReactElement {
     const [questions, questionsLoading, error, refresh] = useQuestions(12);
