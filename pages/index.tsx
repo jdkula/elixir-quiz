@@ -13,6 +13,8 @@ import Quiz from "~/components/Quiz";
 import { Question, QuestionId, AnswerMap } from "~/lib/quiz";
 import Axios from "axios";
 import { AnswerResult, StatsReqBody } from "~/lib/mongostats";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 async function sendResults(answers: AnswerMap) {
     const collated: AnswerResult[] = [];
@@ -27,9 +29,9 @@ async function sendResults(answers: AnswerMap) {
     await Axios.post("/api/stats", { answers: collated, time: GlobalTimer.time() } as StatsReqBody);
 }
 
-const CenterButton = (props: ButtonProps) => (
+const CenterButton = (props: ButtonProps & { width?: string }) => (
     <Box textAlign="center" width="100%">
-        <Box clone width="10rem">
+        <Box clone width={props.width || "10rem"}>
             <Button {...props} />
         </Box>
     </Box>
@@ -43,6 +45,8 @@ export default function Index(): ReactElement {
     const [answers, setAnswers] = useState<AnswerMap>(Map());
 
     const [started, setStarted] = useState(false);
+
+    const router = useRouter();
 
     const start = () => {
         setStarted(!started);
@@ -130,6 +134,14 @@ export default function Index(): ReactElement {
                 <CenterButton variant="outlined" color="primary" onClick={restart}>
                     Restart
                 </CenterButton>
+            )}
+            <Box my={2} />
+            {(!started || showingResults) && (
+                <Link href="/stats">
+                    <CenterButton width="5rem" variant="outlined" color="default" onClick={() => router.push("/stats")}>
+                        Stats
+                    </CenterButton>
+                </Link>
             )}
         </AppContainer>
     );

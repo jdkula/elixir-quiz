@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { getElixir } from "~/lib/elixir";
 import useResults from "~/lib/useResults";
+import Head from "next/head";
 
 const useStyles = makeStyles({
     aura: {
@@ -175,6 +176,9 @@ export default function StatsPage(): ReactElement {
                 </Link>
             }
         >
+            <Head>
+                <title>Elixir Quiz Stats</title>
+            </Head>
             <Stats />
             {!resultsLoading && (
                 <Typography>
