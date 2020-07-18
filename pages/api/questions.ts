@@ -6,12 +6,10 @@ import { Question } from "~/lib/quiz";
 import { randomized } from "~/lib/util";
 import mongoresults from "~/lib/mongoresults";
 import { FullResult } from "~/lib/mongostats";
-import { Set } from "immutable";
 
 import { ObjectId } from "mongodb";
-
-let cache: Question[] | null = null;
-let cacheTime = 0;
+import mongocache, { MongoCache, kCacheId, kCacheExpiry } from "~/lib/mongocache";
+import moment from "moment";
 
 async function populateCache(): Promise<Question[]> {
     const response = await axios.get(process.env.QUIZLET_URL, {
@@ -26,18 +24,65 @@ async function populateCache(): Promise<Question[]> {
     const dom = new JSDOM(html);
 
     const value = [...parseQuizlet(dom.window.document.body).values()];
-    cache = value;
-    cacheTime = Date.now();
+
+    const db = await mongocache;
+
+    await db.updateOne(
+        { _id: kCacheId },
+        {
+            $set: {
+                questions: value,
+                expires: moment().add(kCacheExpiry).toDate(),
+            } as MongoCache,
+        },
+        {
+            upsert: true,
+        },
+    );
 
     return value;
 }
 
-export async function getQuestions(): Promise<Question[]> {
-    if (!cache || Date.now() - cacheTime > 1000 * 60 * 60) {
-        await populateCache();
+export async function getQuestions(selected?: number, random?: boolean): Promise<Question[]> {
+    const db = await mongocache;
+
+    let grabPipeline = [];
+
+    if (selected && random) {
+        grabPipeline = [{ $sample: { size: selected } }];
+    } else if (selected) {
+        grabPipeline = [{ $limit: selected }];
     }
 
-    return JSON.parse(JSON.stringify(cache));
+    let questions: Question[] | undefined = (
+        await db
+            .aggregate([
+                {
+                    $match: {
+                        _id: kCacheId,
+                        expires: { $gte: new Date() },
+                    },
+                },
+                ...grabPipeline,
+                {
+                    $project: {
+                        questions: true,
+                    },
+                },
+            ])
+            .toArray()
+    )[0]?.questions;
+
+    if (!questions) {
+        console.log("Populating!");
+        questions = await populateCache();
+    }
+
+    if (random && !selected) {
+        questions = randomized(questions);
+    }
+
+    return JSON.parse(JSON.stringify(questions));
 }
 
 const Questions: NextApiHandler = async (req, res) => {
@@ -48,7 +93,8 @@ const Questions: NextApiHandler = async (req, res) => {
         (req.query.randomizeQuestions as string)?.toLowerCase()?.trim()?.includes("true") === true;
     const selectStr = (req.query.select as string)?.toLowerCase()?.trim();
     const selected = (selectStr && Number.parseInt(selectStr)) || null;
-    let questions = await getQuestions();
+
+    let questions = await getQuestions(selected, random);
 
     if (forResult) {
         const results = await mongoresults;
@@ -58,13 +104,28 @@ const Questions: NextApiHandler = async (req, res) => {
             return;
         }
 
-        const questionSet = Set(result.answers.map((res) => res.question));
+        const cache = await mongocache;
 
-        questions = questions.filter((q) => questionSet.has(q.id));
+        const qids = result.answers.map((ar) => ar.question);
+
+        questions = (
+            await cache
+                .aggregate([
+                    {
+                        $project: {
+                            questions: {
+                                $filter: {
+                                    input: "$questions",
+                                    cond: { $in: ["$$this.id", qids] },
+                                },
+                            },
+                        },
+                    },
+                ])
+                .toArray()
+        )[0].questions;
     }
 
-    if (random) questions = randomized(questions);
-    if (selected) questions = questions.splice(0, selected);
     if (randomizeQuestions) questions.forEach((q) => (q.answers = randomized(q.answers)));
     res.json(questions);
 };
