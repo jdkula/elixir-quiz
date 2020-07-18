@@ -169,7 +169,7 @@ function Stats(): ReactElement {
 function Result({ result }: { result: FullResult }): ReactElement {
     const classes = useStyles();
     const [modalOpen, setModal] = useState(false);
-    const [questions, loading, error, load] = useQuestions(null, false, false, result._id);
+    const [questions, loading, error, load] = useQuestions(null, false, result._id);
 
     const answerMap: AnswerMap = Map(result.answers.map((answer) => [answer.question, Set(answer.answers)]));
 

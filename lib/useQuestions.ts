@@ -4,7 +4,6 @@ import Axios from "axios";
 
 export default function useQuestions(
     select = 12,
-    randomized = true,
     randomizeQuestions = true,
     forResult = undefined,
     lazy = false,
@@ -19,7 +18,6 @@ export default function useQuestions(
         try {
             const response = await Axios.get("/api/questions", {
                 params: {
-                    randomized,
                     randomizeQuestions,
                     select,
                     forResult,
