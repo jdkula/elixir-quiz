@@ -20,48 +20,50 @@ const kProjectInnerQuestion = {
     },
 };
 
-async function populateCache(): Promise<Question[]> {
-    const response = await axios.get(process.env.QUIZLET_URL, {
-        headers: {
-            "User-Agent":
-                "Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36",
-        },
-    });
-
-    const html = response.data as string;
-
-    const dom = new JSDOM(html);
-
-    const value = [...parseQuizlet(dom.window.document.body).values()];
-
+async function populateCache() {
     const db = await mongocache;
 
-    await db.updateOne(
-        { _id: kCacheId },
-        {
-            $set: {
-                questions: value,
-                expires: moment().add(kCacheExpiry).toDate(),
-            } as MongoCache,
-        },
-        {
-            upsert: true,
-        },
-    );
+    try {
+        const response = await axios.get(process.env.QUIZLET_URL, {
+            headers: {
+                "User-Agent":
+                    "Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36",
+            },
+        });
 
-    return value;
+        const html = response.data as string;
+
+        const dom = new JSDOM(html);
+
+        const value = [...parseQuizlet(dom.window.document.body).values()];
+
+        await db.updateOne(
+            { _id: kCacheId },
+            {
+                $set: {
+                    questions: value,
+                    expires: moment().add(kCacheExpiry).toDate(),
+                } as MongoCache,
+            },
+            {
+                upsert: true,
+            },
+        );
+    } catch (e) {
+        // if we can't fetch for whatever reason,
+        await db.updateOne({ _id: kCacheId }, { $set: { expires: moment().add(kCacheExpiry).toDate() } });
+    }
 }
 
-export async function getQuestions(selected?: number): Promise<Question[]> {
+async function getCachedQuestions(selected?: number): Promise<Question[] | null> {
     const db = await mongocache;
-
     let grabPipeline = [];
 
     if (selected) {
         grabPipeline = [{ $sample: { size: selected } }];
     }
 
-    let questions: Question[] | undefined = await db
+    const questions: Question[] = await db
         .aggregate([
             {
                 $match: {
@@ -75,9 +77,42 @@ export async function getQuestions(selected?: number): Promise<Question[]> {
         ])
         .toArray();
 
+    return questions.length === 0 ? null : questions;
+}
+
+async function getQuestionsForResult(resultId: string): Promise<Question[] | null> {
+    const results = await mongoresults;
+    const result = (await results.findOne({ _id: new ObjectId(resultId) })) as FullResult | null | undefined;
+    if (!result) {
+        return null;
+    }
+
+    const cache = await mongocache;
+
+    const qids = result.answers.map((ar) => ar.question);
+
+    const questions = await cache
+        .aggregate([
+            { $unwind: "$questions" },
+            kProjectInnerQuestion,
+            {
+                $match: {
+                    id: { $in: qids },
+                },
+            },
+        ])
+        .toArray();
+
+    return questions.length === 0 ? null : questions;
+}
+
+export async function getQuestions(selected?: number): Promise<Question[] | null> {
+    let questions = await getCachedQuestions(selected);
+
     if (!questions) {
         console.log("Populating!");
-        questions = await populateCache();
+        await populateCache();
+        questions = await getCachedQuestions(selected);
     }
 
     return JSON.parse(JSON.stringify(questions));
@@ -91,31 +126,11 @@ const Questions: NextApiHandler = async (req, res) => {
     const selectStr = (req.query.select as string)?.toLowerCase()?.trim();
     const selected = (selectStr && Number.parseInt(selectStr)) || null;
 
-    let questions = await getQuestions(selected);
+    const questions = forResult ? await getQuestionsForResult(forResult) : await getQuestions(selected);
 
-    if (forResult) {
-        const results = await mongoresults;
-        const result = (await results.findOne({ _id: new ObjectId(forResult) })) as FullResult | null | undefined;
-        if (!result) {
-            res.status(404).end();
-            return;
-        }
-
-        const cache = await mongocache;
-
-        const qids = result.answers.map((ar) => ar.question);
-
-        questions = await cache
-            .aggregate([
-                { $unwind: "$questions" },
-                kProjectInnerQuestion,
-                {
-                    $match: {
-                        id: { $in: qids },
-                    },
-                },
-            ])
-            .toArray();
+    if (!questions) {
+        res.status(500).end("Couldn't fetch questions...");
+        return;
     }
 
     if (randomizeQuestions) questions.forEach((q) => (q.answers = randomized(q.answers)));
