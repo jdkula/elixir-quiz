@@ -50,7 +50,7 @@ async function populateCache() {
             },
         );
     } catch (e) {
-        // if we can't fetch for whatever reason,
+        // if we can't fetch for whatever reason, bump the expiry and try again later.
         await db.updateOne({ _id: kCacheId }, { $set: { expires: moment().add(kCacheExpiry).toDate() } });
     }
 }
