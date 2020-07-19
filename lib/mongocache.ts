@@ -4,7 +4,7 @@ import { Question } from "./quiz";
 import moment from "moment";
 
 export const kCacheId = new ObjectId("CACHE__CACHE");
-export const kCacheExpiry = moment.duration(1, "day");
+export const kCacheExpiry = moment.duration(1, "hour");
 
 export interface MongoCache {
     questions: Question[];
