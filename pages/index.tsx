@@ -14,6 +14,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { sendStat } from '~/lib/stats';
 import LoadingIndicator from '~/components/LoadingIndicator';
+import omitProps from '~/lib/omitProps';
 
 const Centered = withStyles({
     root: {
@@ -26,7 +27,7 @@ const WideButton = withStyles({
     root: {
         minWidth: ({ minWidth }: { minWidth?: string }) => minWidth || '10rem',
     },
-})(Button);
+})(omitProps(Button, 'minWidth'));
 
 export default function Index(): ReactElement {
     const [questions, questionsLoading, error, refresh] = useQuestions(12);

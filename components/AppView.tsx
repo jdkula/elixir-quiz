@@ -12,6 +12,8 @@ import {
     makeStyles,
 } from '@material-ui/core';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const useStyles = makeStyles({
     noSelect: {
@@ -36,14 +38,18 @@ const AppView: FC<AppViewProps> = ({ children, right, below, width, pinned }) =>
 
     const canTrigger = isWidthDown('md', width, true);
 
+    const router = useRouter();
+
     return (
         <>
             <Slide in={!(canTrigger && trigger) || pinned} appear={false}>
                 <AppBar position="sticky">
                     <Toolbar className={classes.noSelect}>
-                        <Box flexGrow={1} ml={2} className={classes.clickable}>
-                            <Typography variant="h4">Elixir Quiz</Typography>
-                        </Box>
+                        <Link href="/">
+                            <Box flexGrow={1} ml={2} className={classes.clickable} onClick={() => router.push('/')}>
+                                <Typography variant="h4">Elixir Quiz</Typography>
+                            </Box>
+                        </Link>
                         {right}
                     </Toolbar>
                     {below}
