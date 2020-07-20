@@ -17,10 +17,12 @@ import {
 
 type ForwardRef<P, R> = ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<R>>;
 
-export default function omitProps<Props, OmittedProps extends keyof never, ExtendedProps extends Props, RefType>(
-    Component: ComponentType<Props>,
-    ...omittedProps: OmittedProps[]
-): ForwardRef<ExtendedProps, RefType> {
+export default function omitProps<
+    Props,
+    OmittedProps extends keyof never,
+    ExtendedProps extends Props,
+    RefType = ComponentType<Props>
+>(Component: ComponentType<Props>, ...omittedProps: OmittedProps[]): ForwardRef<ExtendedProps, RefType> {
     const Omitted = (props: ExtendedProps, ref: Ref<RefType>) => {
         const copy = { ...props };
         for (const omitted of omittedProps) {
