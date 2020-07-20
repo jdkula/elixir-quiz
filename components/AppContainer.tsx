@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from "react";
+import { ReactElement, ReactNode } from 'react';
 import {
     Container,
     Box,
@@ -10,12 +10,12 @@ import {
     withWidth,
     isWidthDown,
     makeStyles,
-} from "@material-ui/core";
-import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
+} from '@material-ui/core';
+import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 
 const useStyles = makeStyles({
     noSelect: {
-        userSelect: "none",
+        userSelect: 'none',
     },
 });
 
@@ -35,7 +35,7 @@ function AppContainer({
     const styles = useStyles();
     const trigger = useScrollTrigger();
 
-    const canTrigger = isWidthDown("md", width, true);
+    const canTrigger = isWidthDown('md', width, true);
 
     return (
         <>

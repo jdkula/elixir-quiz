@@ -1,7 +1,7 @@
-import { ReactElement, useState, ChangeEvent } from "react";
-import { Answer } from "~/lib/quiz";
-import { Typography, FormControlLabel, Checkbox, Box } from "@material-ui/core";
-import { ElixirType, getElixir } from "~/lib/elixir";
+import { ReactElement, useState, ChangeEvent } from 'react';
+import { Answer } from '~/lib/quiz';
+import { Typography, FormControlLabel, Checkbox, Box } from '@material-ui/core';
+import { ElixirType, getElixir } from '~/lib/elixir';
 
 interface Props {
     answer: Answer;
@@ -13,7 +13,14 @@ interface Props {
     deselect: (type: ElixirType) => void;
 }
 
-export default function AnswerOption({ answer, index, showing, select, deselect, initialChecked }: Props): ReactElement {
+export default function AnswerOption({
+    answer,
+    index,
+    showing,
+    select,
+    deselect,
+    initialChecked,
+}: Props): ReactElement {
     const [checked, setChecked] = useState(initialChecked ?? false);
 
     const update = (e: ChangeEvent<HTMLInputElement>) => {
@@ -24,7 +31,7 @@ export default function AnswerOption({ answer, index, showing, select, deselect,
         else deselect(answer.assignment);
     };
 
-    const letterIndex = "abcdefghijklmnopqrstuvwxyz"[index];
+    const letterIndex = 'abcdefghijklmnopqrstuvwxyz'[index];
 
     const color = getElixir(answer.assignment).color;
 

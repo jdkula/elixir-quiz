@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import Axios from "axios";
-import { StatsReply } from "~/pages/api/stats";
+import { useState, useEffect } from 'react';
+import Axios from 'axios';
+import { StatsReply } from './stats';
 
 export default function useStats(): [StatsReply | null, boolean, boolean, () => void] {
     const [stats, setStats] = useState<StatsReply | null>(null);
@@ -11,7 +11,7 @@ export default function useStats(): [StatsReply | null, boolean, boolean, () => 
         setLoading(true);
         setError(false);
         try {
-            const response = await Axios.get("/api/stats");
+            const response = await Axios.get('/api/stats');
             if (response.status !== 200) {
                 setError(true);
                 setLoading(false);

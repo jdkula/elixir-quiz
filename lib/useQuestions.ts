@@ -1,6 +1,6 @@
-import { Question } from "./quiz";
-import { useState, useEffect } from "react";
-import Axios from "axios";
+import { Question } from './quiz';
+import { useState, useEffect } from 'react';
+import Axios from 'axios';
 
 export default function useQuestions(
     select = 12,
@@ -16,7 +16,7 @@ export default function useQuestions(
         setLoading(true);
         setError(false);
         try {
-            const response = await Axios.get("/api/questions", {
+            const response = await Axios.get('/api/questions', {
                 params: {
                     randomizeQuestions,
                     select,

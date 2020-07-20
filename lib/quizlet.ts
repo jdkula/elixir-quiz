@@ -4,9 +4,9 @@
  * Contains functions to parse Questions from
  * a provided Quizlet of a certain format.
  */
-import { Question, Answer } from "./quiz";
-import { getElixir } from "./elixir";
-import md5 from "md5";
+import { Question, Answer } from './quiz';
+import { getElixir } from './elixir';
+import md5 from 'md5';
 
 /**
  * Given a [definition] of the form:
@@ -19,7 +19,7 @@ import md5 from "md5";
 export function parseAssignments(definition: Element): number[] {
     const text = definition.innerHTML;
 
-    return text.split("<br>").map((s) => parseInt(s.substr(s.search(/\d+/)).trim()));
+    return text.split('<br>').map((s) => parseInt(s.substr(s.search(/\d+/)).trim()));
 }
 
 /**
@@ -29,7 +29,7 @@ export function parseAssignments(definition: Element): number[] {
 export function parseQuestion(question: Element): string {
     const text = question.textContent;
 
-    const cutoff = text.indexOf("a)");
+    const cutoff = text.indexOf('a)');
 
     return text.substring(0, cutoff).trim();
 }
@@ -41,7 +41,7 @@ export function parseQuestion(question: Element): string {
 export function parseAnswers(question: Element): string[] {
     const re = /[^a-z][a-z]\) .*?(?=<br>)/g;
     let html = question.innerHTML;
-    html += "<br>";
+    html += '<br>';
     const info = html.match(re);
 
     // substr(3) removes " x)"
@@ -52,8 +52,8 @@ export function parseAnswers(question: Element): string[] {
  * Parses a single flashcard into a Question.
  */
 export function parseFlashcard(flashcard: Element): Question {
-    const questionHtml = flashcard.querySelector(".SetPageTerm-wordText > .TermText");
-    const assignmentHtml = flashcard.querySelector(".SetPageTerm-definitionText > .TermText");
+    const questionHtml = flashcard.querySelector('.SetPageTerm-wordText > .TermText');
+    const assignmentHtml = flashcard.querySelector('.SetPageTerm-definitionText > .TermText');
 
     const question = parseQuestion(questionHtml);
     const answerTexts = parseAnswers(questionHtml);
@@ -84,7 +84,7 @@ export function parseFlashcard(flashcard: Element): Question {
  * Parses an entire Quizlet into an unordered set of questions.
  */
 export function parseQuizlet(document: Element): Set<Question> {
-    const flashcards = document.querySelectorAll(".SetPageTerms-term");
+    const flashcards = document.querySelectorAll('.SetPageTerms-term');
     const set = new Set<Question>();
 
     for (const flashcard of flashcards) {

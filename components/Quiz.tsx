@@ -1,13 +1,13 @@
-import { ReactElement } from "react";
-import { Question, QuestionId, AnswerMap } from "~/lib/quiz";
-import QuizContainer from "./QuizContainer";
-import { GridListTile } from "@material-ui/core";
-import QuestionCard from "./QuestionCard";
-import AnswerOption from "./AnswerOption";
-import { ElixirType } from "~/lib/elixir";
+import { ReactElement } from 'react';
+import { Question, QuestionId, AnswerMap } from '~/lib/quiz';
+import QuizContainer from './QuizContainer';
+import { GridListTile } from '@material-ui/core';
+import QuestionCard from './QuestionCard';
+import AnswerOption from './AnswerOption';
+import { ElixirType } from '~/lib/elixir';
 
-import { Set } from "immutable";
-import DelayedSlide from "./DelayedSlide";
+import { Set } from 'immutable';
+import DelayedSlide from './DelayedSlide';
 
 interface Props {
     questions: Question[];
@@ -43,7 +43,7 @@ export default function Quiz({
                             <QuestionCard question={q} index={i}>
                                 {q.answers.map((a, j) => (
                                     <AnswerOption
-                                        key={i + " " + j}
+                                        key={i + ' ' + j}
                                         answer={a}
                                         index={j}
                                         select={getSelect(q.id)}

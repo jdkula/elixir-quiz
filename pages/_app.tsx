@@ -1,12 +1,12 @@
-import { AppPropsType } from "next/dist/next-server/lib/utils";
-import { ReactElement } from "react";
-import Head from "next/head";
-import { CssBaseline, ThemeProvider, createMuiTheme } from "@material-ui/core";
+import { AppPropsType } from 'next/dist/next-server/lib/utils';
+import { ReactElement } from 'react';
+import Head from 'next/head';
+import { CssBaseline, ThemeProvider, createMuiTheme } from '@material-ui/core';
 
 const theme = createMuiTheme({
     palette: {
         primary: {
-            main: "#4fd2d6",
+            main: '#4fd2d6',
         },
     },
 });

@@ -1,54 +1,39 @@
-import { ReactElement, useState, forwardRef } from "react";
-import useQuestions from "~/lib/useQuestions";
-import { Button, Box, ButtonProps, LinearProgress, Collapse } from "@material-ui/core";
-import AppContainer from "~/components/AppContainer";
-import Results from "~/components/Results";
+import { ReactElement, useState } from 'react';
+import useQuestions from '~/lib/useQuestions';
+import { Button, Box, withStyles } from '@material-ui/core';
+import AppContainer from '~/components/AppContainer';
+import Results from '~/components/Results';
 
-import { Map, Set } from "immutable";
-import Head from "next/head";
-import GlobalTimer from "~/components/GlobalTimer";
-import HideToggle from "~/components/HideToggle";
-import Quiz from "~/components/Quiz";
-import { AnswerMap } from "~/lib/quiz";
-import Axios from "axios";
-import { AnswerResult, StatsReqBody } from "~/lib/mongostats";
-import { useRouter } from "next/router";
-import Link from "next/link";
+import { Map, Set } from 'immutable';
+import Head from 'next/head';
+import GlobalTimer from '~/components/GlobalTimer';
+import HideToggle from '~/components/HideToggle';
+import Quiz from '~/components/Quiz';
+import { AnswerMap } from '~/lib/quiz';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+import { sendStat } from '~/lib/stats';
+import LoadingIndicator from '~/components/LoadingIndicator';
 
-async function sendResults(answers: AnswerMap) {
-    const collated: AnswerResult[] = [];
+const Centered = withStyles({
+    root: {
+        width: '100%',
+        textAlign: 'center',
+    },
+})(Box);
 
-    answers.entrySeq().forEach(([qid, aset]) =>
-        collated.push({
-            question: qid,
-            answers: aset.toArray(),
-        }),
-    );
-
-    await Axios.post("/api/stats", {
-        answers: collated,
-        time: GlobalTimer.time(),
-        date: new Date(),
-    } as StatsReqBody);
-}
-
-const CenterButton = forwardRef<HTMLButtonElement, ButtonProps & { width?: string }>((props, ref) => (
-    <Box textAlign="center" width="100%">
-        <Box clone minWidth={(props.width || "10rem") + " !important"}>
-            <Button ref={ref} {...props} />
-        </Box>
-    </Box>
-));
+const WideButton = withStyles({
+    root: {
+        minWidth: ({ minWidth }: { minWidth?: string }) => minWidth || '10rem',
+    },
+})(Button);
 
 export default function Index(): ReactElement {
     const [questions, questionsLoading, error, refresh] = useQuestions(12);
-
     const [showingResults, setShowingResults] = useState(false);
-
     const [answers, setAnswers] = useState<AnswerMap>(Map());
-
     const [started, setStarted] = useState(false);
-
+    const [timerShown, setTimerShown] = useState(false);
     const router = useRouter();
 
     const start = () => {
@@ -60,7 +45,7 @@ export default function Index(): ReactElement {
     const restart = () => {
         window.scrollTo({
             top: 0,
-            behavior: "smooth",
+            behavior: 'smooth',
         });
 
         setShowingResults(false);
@@ -77,14 +62,12 @@ export default function Index(): ReactElement {
         requestAnimationFrame(() => {
             window.scrollTo({
                 top: document.body.scrollHeight,
-                behavior: "smooth",
+                behavior: 'smooth',
             });
         });
 
-        sendResults(answers);
+        sendStat(answers);
     };
-
-    const [timerShown, setTimerShown] = useState(false);
 
     return (
         <AppContainer
@@ -94,40 +77,31 @@ export default function Index(): ReactElement {
                     <GlobalTimer />
                 </HideToggle>
             }
-            below={
-                <Collapse in={questionsLoading || error}>
-                    <LinearProgress
-                        color={error ? "secondary" : "primary"}
-                        variant={error ? "determinate" : "indeterminate"}
-                        value={error ? 100 : undefined}
-                    />
-                </Collapse>
-            }
+            below={<LoadingIndicator loading={questionsLoading} error={error} />}
         >
             <Head>
                 <title>Elixir Quiz</title>
             </Head>
-            <Box position="relative">
+            <Centered position="relative">
                 {!showingResults ? (
-                    <CenterButton
+                    <WideButton
                         onClick={start}
                         disabled={questionsLoading || started || error}
                         variant="outlined"
                         color="secondary"
                         size="large"
                     >
-                        {(questionsLoading && "Loading...") ||
-                            (error && "Error loading questions!") ||
-                            (started && "Go!") ||
-                            "Start!"}
-                    </CenterButton>
+                        {(questionsLoading && 'Loading...') ||
+                            (error && 'Error loading questions!') ||
+                            (started && 'Go!') ||
+                            'Start!'}
+                    </WideButton>
                 ) : (
-                    <CenterButton onClick={restart} variant="outlined" color="primary" size="large">
+                    <WideButton onClick={restart} variant="outlined" color="primary" size="large">
                         Restart
-                    </CenterButton>
+                    </WideButton>
                 )}
-            </Box>
-
+            </Centered>
             <Quiz
                 questions={questions}
                 showingResults={showingResults}
@@ -135,25 +109,40 @@ export default function Index(): ReactElement {
                 setAnswers={setAnswers}
                 started={started}
             />
-            {started && (
-                <CenterButton variant="outlined" color="default" size="large" disabled={showingResults} onClick={stop}>
-                    {showingResults ? "Finished!" : "Finish!"}
-                </CenterButton>
-            )}
-            {showingResults && <Results answers={answers} />}
-            {showingResults && (
-                <CenterButton variant="outlined" color="primary" onClick={restart}>
-                    Restart
-                </CenterButton>
-            )}
-            <Box my={2} />
-            {(!started || showingResults) && (
-                <Link href="/stats">
-                    <CenterButton width="8rem" variant="outlined" color="default" onClick={() => router.push("/stats")}>
-                        View Stats
-                    </CenterButton>
-                </Link>
-            )}
+            <Centered>
+                {started && (
+                    <WideButton
+                        variant="outlined"
+                        color="default"
+                        size="large"
+                        disabled={showingResults}
+                        onClick={stop}
+                    >
+                        {showingResults ? 'Finished!' : 'Finish!'}
+                    </WideButton>
+                )}
+                {showingResults && (
+                    <>
+                        <Results answers={answers} />
+                        <WideButton variant="outlined" color="primary" onClick={restart}>
+                            Restart
+                        </WideButton>
+                    </>
+                )}
+                <Box my={2} />
+                {(!started || showingResults) && (
+                    <Link href="/stats">
+                        <WideButton
+                            minWidth="8rem"
+                            variant="outlined"
+                            color="default"
+                            onClick={() => router.push('/stats')}
+                        >
+                            View Stats
+                        </WideButton>
+                    </Link>
+                )}
+            </Centered>
         </AppContainer>
     );
 }

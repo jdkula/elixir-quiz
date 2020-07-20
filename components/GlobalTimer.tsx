@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef, forwardRef, ForwardRefExoticComponent } from "react";
+import { useState, useEffect, useRef, forwardRef, ForwardRefExoticComponent } from 'react';
 
-import moment from "moment";
-import { Typography, Card, Box } from "@material-ui/core";
+import moment from 'moment';
+import { Typography, Card, Box } from '@material-ui/core';
 
 let startTime = 0;
 let stopTime = 0;
@@ -28,13 +28,13 @@ const GlobalTimerComponent = forwardRef((_, ref) => {
         };
     }, []);
 
-    const dur = moment.duration(elapsed, "milliseconds");
+    const dur = moment.duration(elapsed, 'milliseconds');
 
     return (
         <Card ref={ref} raised>
             <Box p={1}>
                 <Typography variant="h6">
-                    {dur.minutes()}:{dur.seconds().toString().padStart(2, "0")}
+                    {dur.minutes()}:{dur.seconds().toString().padStart(2, '0')}
                 </Typography>
             </Box>
         </Card>

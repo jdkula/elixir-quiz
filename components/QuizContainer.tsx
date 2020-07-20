@@ -1,6 +1,6 @@
-import { ReactElement, ReactNode } from "react";
-import { Container, Box, GridList, withWidth, isWidthUp } from "@material-ui/core";
-import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
+import { ReactElement, ReactNode } from 'react';
+import { Container, Box, GridList, withWidth, isWidthUp } from '@material-ui/core';
+import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 
 function QuizContainer({
     children,
@@ -11,7 +11,7 @@ function QuizContainer({
     width?: Breakpoint;
     cols?: number;
 }): ReactElement {
-    const gridCols = cols || (isWidthUp("md", width, true) ? 3 : 1);
+    const gridCols = cols || (isWidthUp('md', width, true) ? 3 : 1);
 
     return (
         <Container>

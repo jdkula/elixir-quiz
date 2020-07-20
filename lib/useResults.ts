@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
-import Axios from "axios";
-import { StatsReply } from "~/pages/api/stats";
-import { FullResult } from "./mongostats";
+import { useState, useEffect } from 'react';
+import Axios from 'axios';
+import { FullResult } from './stats.server';
 
 export default function useResults(): [FullResult[], boolean, boolean, () => void] {
     const [stats, setStats] = useState<FullResult[]>([]);
@@ -12,7 +11,7 @@ export default function useResults(): [FullResult[], boolean, boolean, () => voi
         setLoading(true);
         setError(false);
         try {
-            const response = await Axios.get("/api/results");
+            const response = await Axios.get('/api/results');
             if (response.status !== 200) {
                 setError(true);
                 setLoading(false);
