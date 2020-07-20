@@ -1,6 +1,8 @@
 import { Slide, SlideProps } from '@material-ui/core';
-import { ReactElement } from 'react';
+import { FC } from 'react';
 
-export default function DelayedSlide(props: SlideProps & { delay?: number }): ReactElement {
-    return <Slide {...props} style={{ transitionDelay: props.delay ? `${props.delay}ms` : '0ms' }} />;
-}
+const DelayedSlide: FC<SlideProps & { delay?: number }> = ({ delay, ...rest }) => (
+    <Slide {...rest} style={{ transitionDelay: delay ? `${delay}ms` : '0ms' }} />
+);
+
+export default DelayedSlide;

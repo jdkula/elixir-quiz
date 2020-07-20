@@ -1,6 +1,6 @@
 import { ReactElement, FC } from 'react';
 import useStats from '~/lib/useStats';
-import AppContainer from '~/components/AppContainer';
+import AppView from '~/components/AppView';
 import { Button, Collapse, LinearProgress, Box, Container, Typography } from '@material-ui/core';
 
 import Link from 'next/link';
@@ -31,7 +31,7 @@ export default function StatsPage(): ReactElement {
     const router = useRouter();
 
     return (
-        <AppContainer
+        <AppView
             below={
                 <Collapse in={statsLoading || resultsLoading}>
                     <LinearProgress />
@@ -48,6 +48,6 @@ export default function StatsPage(): ReactElement {
             </Head>
             {!statsLoading && <StatsSummary stats={stats} />}
             {!resultsLoading && <Results results={results} />}
-        </AppContainer>
+        </AppView>
     );
 }

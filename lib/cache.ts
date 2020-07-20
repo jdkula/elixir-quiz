@@ -7,7 +7,7 @@ import { Question } from './quiz';
 import moment from 'moment';
 import mongoresults from './db/mongoresults';
 import { ObjectId } from 'mongodb';
-import { FullResult } from './stats.server';
+import { FullResult } from './stats';
 
 const kProjectInnerQuestion = {
     $project: {

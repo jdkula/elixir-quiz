@@ -1,7 +1,7 @@
 import { ReactElement, useState } from 'react';
 import useQuestions from '~/lib/useQuestions';
 import { Button, Box, withStyles } from '@material-ui/core';
-import AppContainer from '~/components/AppContainer';
+import AppView from '~/components/AppView';
 import Results from '~/components/Results';
 
 import { Map, Set } from 'immutable';
@@ -70,7 +70,7 @@ export default function Index(): ReactElement {
     };
 
     return (
-        <AppContainer
+        <AppView
             pinned={timerShown || showingResults}
             right={
                 <HideToggle shown={timerShown} onToggle={setTimerShown}>
@@ -143,6 +143,6 @@ export default function Index(): ReactElement {
                     </Link>
                 )}
             </Centered>
-        </AppContainer>
+        </AppView>
     );
 }

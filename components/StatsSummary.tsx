@@ -1,8 +1,6 @@
 import { FC } from 'react';
-import { StatsBase } from 'fs';
 import { Box, withStyles, Typography, Container } from '@material-ui/core';
 import ElixirText from './ElixirText';
-import useStats from '~/lib/useStats';
 import moment from 'moment';
 import { StatsReply } from '~/lib/stats';
 

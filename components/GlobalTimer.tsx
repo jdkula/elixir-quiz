@@ -7,7 +7,13 @@ let startTime = 0;
 let stopTime = 0;
 let handle: number | null = null;
 
-type GlobalTimerType = ForwardRefExoticComponent<unknown> & { start: () => void; stop: () => void; time: () => number };
+interface GlobalTimerFunctions {
+    start: () => void;
+    stop: () => void;
+    time: () => number;
+}
+
+type GlobalTimerType = ForwardRefExoticComponent<unknown> & GlobalTimerFunctions;
 
 const GlobalTimerComponent = forwardRef((_, ref) => {
     const [elapsed, setElapsed] = useState(0);
@@ -16,13 +22,13 @@ const GlobalTimerComponent = forwardRef((_, ref) => {
 
     useEffect(() => {
         setElapsed(stopTime - startTime);
-        handle.current = setInterval(() => {
+        handle.current = window.setInterval(() => {
             setElapsed(stopTime - startTime);
         }, 500);
 
         return () => {
             if (handle.current) {
-                clearInterval(handle.current);
+                window.clearInterval(handle.current);
                 handle.current = null;
             }
         };
@@ -47,7 +53,7 @@ GlobalTimer.start = () => {
     GlobalTimer.stop();
     startTime = Date.now();
 
-    handle = setInterval(() => {
+    handle = window.setInterval(() => {
         stopTime = Date.now();
     }, 500);
 };

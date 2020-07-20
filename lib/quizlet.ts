@@ -5,7 +5,7 @@
  * a provided Quizlet of a certain format.
  */
 import { Question, Answer } from './quiz';
-import { getElixir } from './elixir';
+import { getElixir, ScoredElixirType } from './elixir';
 import md5 from 'md5';
 
 /**
@@ -69,7 +69,7 @@ export function parseFlashcard(flashcard: Element): Question {
 
         answers.push({
             text: answerTexts[i],
-            assignment: elixir.type,
+            assignment: elixir.type as ScoredElixirType, // no assignment will lead to Neutral
         });
     }
 

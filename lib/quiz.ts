@@ -5,7 +5,7 @@ export type QuestionId = string;
 
 export interface Answer {
     text: string;
-    assignment: ElixirType;
+    assignment: ScoredElixirType;
 }
 
 export interface Question {

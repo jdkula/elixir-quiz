@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
-import { FullResult } from './stats.server';
+import { FullResult } from './stats';
 
 export default function useResults(): [FullResult[], boolean, boolean, () => void] {
     const [stats, setStats] = useState<FullResult[]>([]);

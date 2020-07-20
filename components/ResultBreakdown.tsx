@@ -1,6 +1,6 @@
-import { FC, ReactElement, Fragment } from 'react';
+import { FC, Fragment } from 'react';
 import ElixirText from './ElixirText';
-import { ElixirType, getElixirTypes } from '~/lib/elixir';
+import { getElixirTypes } from '~/lib/elixir';
 import { Grid, Box } from '@material-ui/core';
 import { Scores } from '~/lib/quiz';
 

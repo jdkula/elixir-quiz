@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from 'react';
+import { ReactNode, FC } from 'react';
 import {
     Container,
     Box,
@@ -17,22 +17,21 @@ const useStyles = makeStyles({
     noSelect: {
         userSelect: 'none',
     },
+    clickable: {
+        cursor: 'pointer',
+    },
 });
 
-function AppContainer({
-    children,
-    right,
-    below,
-    width,
-    pinned,
-}: {
+interface AppViewProps {
     children: ReactNode;
     right?: ReactNode;
     below?: ReactNode;
     width?: Breakpoint;
     pinned?: boolean;
-}): ReactElement {
-    const styles = useStyles();
+}
+
+const AppView: FC<AppViewProps> = ({ children, right, below, width, pinned }) => {
+    const classes = useStyles();
     const trigger = useScrollTrigger();
 
     const canTrigger = isWidthDown('md', width, true);
@@ -41,8 +40,8 @@ function AppContainer({
         <>
             <Slide in={!(canTrigger && trigger) || pinned} appear={false}>
                 <AppBar position="sticky">
-                    <Toolbar className={styles.noSelect}>
-                        <Box flexGrow={1} ml={2}>
+                    <Toolbar className={classes.noSelect}>
+                        <Box flexGrow={1} ml={2} className={classes.clickable}>
                             <Typography variant="h4">Elixir Quiz</Typography>
                         </Box>
                         {right}
@@ -55,6 +54,6 @@ function AppContainer({
             </Box>
         </>
     );
-}
+};
 
-export default withWidth()(AppContainer);
+export default withWidth()(AppView);
