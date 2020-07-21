@@ -1,6 +1,5 @@
 import { Typography, TypographyProps } from '@material-ui/core';
 import { ElixirType, getElixir } from '~/lib/elixir';
-import omitProps from '~/lib/omitProps';
 import styled from 'styled-components';
 
 interface Props extends TypographyProps {

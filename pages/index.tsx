@@ -14,7 +14,6 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { sendStat } from '~/lib/stats';
 import LoadingIndicator from '~/components/LoadingIndicator';
-import omitProps from '~/lib/omitProps';
 import styled from 'styled-components';
 
 const Centered = styled(Box)({
