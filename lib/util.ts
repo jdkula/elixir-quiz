@@ -12,3 +12,7 @@ export function randomized<T>(arr: T[]): T[] {
 
     return randomVersion;
 }
+
+export function truncate(number: number, decimalPlaces: number): number {
+    return Math.floor(number * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
+}

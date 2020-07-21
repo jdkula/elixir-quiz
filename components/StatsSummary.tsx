@@ -3,6 +3,7 @@ import { Box, withStyles, Typography, Container } from '@material-ui/core';
 import ElixirText from './ElixirText';
 import moment from 'moment';
 import { StatsReply } from '~/lib/stats';
+import { truncate } from '~/lib/util';
 
 const StatsItem: FC = ({ children }) => <Box my={2}>{children}</Box>;
 
@@ -21,10 +22,6 @@ interface ElixirPointsProps {
     elemental: number;
     enchantment: number;
     transformation: number;
-}
-
-function truncate(number: number, decimalPlaces: number): number {
-    return Math.floor(number * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
 }
 
 const ElixirPoints: FC<ElixirPointsProps> = ({ aura, elemental, enchantment, transformation }) => (

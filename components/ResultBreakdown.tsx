@@ -3,6 +3,7 @@ import ElixirText from './ElixirText';
 import { getElixirTypes } from '~/lib/elixir';
 import { Grid, Box } from '@material-ui/core';
 import { Scores } from '~/lib/quiz';
+import { truncate } from '~/lib/util';
 
 interface Props {
     scores: Scores;
@@ -23,7 +24,7 @@ const ResultBreakdown: FC<Props> = ({ scores }) => {
             </Grid>
             <Grid item xs={5}>
                 <ElixirText elixir={elixir.type} align="left">
-                    {scores[elixir.type] ?? 0}
+                    {truncate(scores[elixir.type] ?? 0, 2)}
                 </ElixirText>
             </Grid>
         </Fragment>
