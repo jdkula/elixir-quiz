@@ -9,7 +9,7 @@ interface Props extends TypographyProps {
 }
 
 const ElixirText = styled(Typography)<Props>`
-    font-weight: ${({ $bold: bold }) => (bold ? 'bold' : 'normal')};
+    font-weight: ${({ $bold: bold }) => (bold ? 'bold' : undefined)};
     color: ${({ $elixir: elixir }) => getElixir(elixir)?.color ?? ''};
 `;
 
