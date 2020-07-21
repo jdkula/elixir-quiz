@@ -17,7 +17,7 @@ export default function App({ Component, pageProps }: AppPropsType): ReactElemen
     useEffect(() => {
         initGA();
         logPageView();
-    }, []);
+    }, [Component]);
     return (
         <StylesProvider injectFirst>
             <MuiThemeProvider theme={theme}>

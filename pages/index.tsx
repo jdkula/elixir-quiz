@@ -73,7 +73,7 @@ export default function Index(): ReactElement {
     const finish = () => {
         logInteraction({
             category: 'Quiz',
-            action: 'finishQUiz',
+            action: 'finishQuiz',
         });
 
         setShowingResults(true);

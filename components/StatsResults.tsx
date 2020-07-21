@@ -4,7 +4,7 @@ import { getElixir } from '~/lib/elixir';
 import { FullResult } from '~/lib/stats';
 import ResultDialog from './ResultDialog';
 import ElixirText from './ElixirText';
-import { logInteraction } from '~/lib/googleAnalytics';
+import { logInteraction, logModal } from '~/lib/googleAnalytics';
 
 const useStyles = makeStyles({
     Aura: {
@@ -41,6 +41,8 @@ const StatsResults: FC<Props> = ({ result, index }) => {
             action: 'showResult',
             value: index,
         });
+        logModal('/stats/' + result._id);
+        setModal(true);
     };
 
     return (
