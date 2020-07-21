@@ -6,7 +6,7 @@
     "dev": "cross-env NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint --ext .js,.ts,.jsx,.tsx --ignore-pattern .*node_modules.* ./pages ./components ./lib --ignore-pattern .*node_modules.*"
+    "lint": "eslint --ext .js,.ts,.jsx,.tsx ."
   },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
