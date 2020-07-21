@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { sendStat } from '~/lib/stats';
 import LoadingIndicator from '~/components/LoadingIndicator';
 import styled from 'styled-components';
+import { logInteraction } from '~/lib/googleAnalytics';
 
 const Centered = styled(Box)({
     width: '100%',
@@ -33,13 +34,29 @@ export default function Index(): ReactElement {
     const [timerShown, setTimerShown] = useState(false);
     const router = useRouter();
 
+    const logSetTimerShown = (show: boolean) => {
+        logInteraction({
+            category: 'Timer',
+            action: show ? 'showTimer' : 'hideTimer',
+        });
+        setTimerShown(show);
+    };
+
     const start = () => {
+        logInteraction({
+            category: 'Quiz',
+            action: 'startQuiz',
+        });
         setStarted(!started);
         setAnswers(Map(questions.map((q) => [q.id, Set()]))); // initialize with all questions
         GlobalTimer.start();
     };
 
     const restart = () => {
+        logInteraction({
+            category: 'Quiz',
+            action: 'restartQuiz',
+        });
         window.scrollTo({
             top: 0,
             behavior: 'smooth',
@@ -53,7 +70,12 @@ export default function Index(): ReactElement {
         refresh();
     };
 
-    const stop = () => {
+    const finish = () => {
+        logInteraction({
+            category: 'Quiz',
+            action: 'finishQUiz',
+        });
+
         setShowingResults(true);
         GlobalTimer.stop();
         requestAnimationFrame(() => {
@@ -70,7 +92,7 @@ export default function Index(): ReactElement {
         <AppView
             pinned={timerShown || showingResults}
             right={
-                <HideToggle shown={timerShown} onToggle={setTimerShown}>
+                <HideToggle shown={timerShown} onToggle={logSetTimerShown}>
                     <GlobalTimer />
                 </HideToggle>
             }
@@ -113,7 +135,7 @@ export default function Index(): ReactElement {
                         color="default"
                         size="large"
                         disabled={showingResults}
-                        onClick={stop}
+                        onClick={finish}
                     >
                         {showingResults ? 'Finished!' : 'Finish!'}
                     </WideButton>

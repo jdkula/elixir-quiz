@@ -4,6 +4,7 @@ import { getElixir } from '~/lib/elixir';
 import { FullResult } from '~/lib/stats';
 import ResultDialog from './ResultDialog';
 import ElixirText from './ElixirText';
+import { logInteraction } from '~/lib/googleAnalytics';
 
 const useStyles = makeStyles({
     Aura: {
@@ -25,17 +26,26 @@ const useStyles = makeStyles({
 
 interface Props {
     result: FullResult;
+    index?: number;
 }
 
-const StatsResults: FC<Props> = ({ result }) => {
+const StatsResults: FC<Props> = ({ result, index }) => {
     const classes = useStyles();
     const [modalOpen, setModal] = useState(false);
 
     const buttonClass = result.result.length > 1 ? classes.Neutral : classes[result.result[0]];
 
+    const logOpen = () => {
+        logInteraction({
+            category: 'Stats',
+            action: 'showResult',
+            value: index,
+        });
+    };
+
     return (
         <span>
-            <Button className={buttonClass} onClick={() => setModal(true)} variant="outlined">
+            <Button className={buttonClass} onClick={logOpen} variant="outlined">
                 <Box display="inline-flex" flexDirection="column" alignItems="center">
                     {result.result.map((type, i) => (
                         <ElixirText variant="inherit" key={i} $elixir={type}>

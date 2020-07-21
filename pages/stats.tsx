@@ -18,7 +18,7 @@ const Results: FC<{ results: FullResult[] }> = ({ results }) => (
         <Box m={2} display="flex" flexDirection="column" width="min-content" alignItems="center">
             {results.map((res, i) => (
                 <Box component="div" m={1} key={i}>
-                    <StatsResults result={res} />
+                    <StatsResults result={res} index={i} />
                 </Box>
             ))}
         </Box>

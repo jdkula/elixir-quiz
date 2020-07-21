@@ -1,8 +1,9 @@
 import { AppPropsType } from 'next/dist/next-server/lib/utils';
-import { ReactElement } from 'react';
+import { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
 import { CssBaseline, ThemeProvider as MuiThemeProvider, createMuiTheme, StylesProvider } from '@material-ui/core';
 import { ThemeProvider } from 'styled-components';
+import { initGA, logPageView } from '~/lib/googleAnalytics';
 
 const theme = createMuiTheme({
     palette: {
@@ -13,6 +14,10 @@ const theme = createMuiTheme({
 });
 
 export default function App({ Component, pageProps }: AppPropsType): ReactElement {
+    useEffect(() => {
+        initGA();
+        logPageView();
+    }, []);
     return (
         <StylesProvider injectFirst>
             <MuiThemeProvider theme={theme}>
