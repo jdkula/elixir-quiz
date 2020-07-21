@@ -23,20 +23,24 @@ interface ElixirPointsProps {
     transformation: number;
 }
 
+function truncate(number: number, decimalPlaces: number): number {
+    return Math.floor(number * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
+}
+
 const ElixirPoints: FC<ElixirPointsProps> = ({ aura, elemental, enchantment, transformation }) => (
     <Container>
         <ElixirText elixir="Aura" bold>
-            Aura recieved {aura} points,
+            Aura recieved {truncate(aura, 2)} points,
         </ElixirText>
         <ElixirText elixir="Elemental" bold>
-            Elemental recieved {elemental} points
+            Elemental recieved {truncate(elemental, 2)} points
         </ElixirText>
         <ElixirText elixir="Enchantment" bold>
-            Enchantment recieved {enchantment} points,
+            Enchantment recieved {truncate(enchantment, 2)} points,
             <Typography component="span"> and</Typography>
         </ElixirText>
         <ElixirText elixir="Transformation" bold>
-            Transformation recieved {transformation} points.
+            Transformation recieved {truncate(transformation, 2)} points.
         </ElixirText>
     </Container>
 );
