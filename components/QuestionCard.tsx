@@ -1,6 +1,7 @@
 import { ReactNode, forwardRef } from 'react';
 import { Question } from '~/lib/quiz';
-import { Card, CardContent, Typography, Box } from '@material-ui/core';
+import { Card, CardContent, Typography } from '@material-ui/core';
+import styled from 'styled-components';
 
 interface Props {
     question: Question;
@@ -8,17 +9,11 @@ interface Props {
     children: ReactNode;
 }
 
-const QuizCard = forwardRef(({ children }: { children: ReactNode }, ref) => (
-    <Box clone height="100%">
-        <Card variant="outlined" ref={ref}>
-            {children}
-        </Card>
-    </Box>
-));
+const QuizCard = styled(Card)({ height: '100%' });
 
 const QuestionCard = forwardRef(({ question, index, children }: Props, ref) => {
     return (
-        <QuizCard ref={ref}>
+        <QuizCard ref={ref} variant="outlined">
             <CardContent>
                 <Typography variant="h6">Question {index + 1}</Typography>
                 <Typography variant="body1">{question.question}</Typography>

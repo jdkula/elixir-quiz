@@ -15,7 +15,7 @@ const ResultAssignment: FC<Props> = ({ scores }) => {
         return (
             <Typography variant="h4">
                 You are elixir-
-                <ElixirText bold elixir="Neutral" variant="h4" component="span">
+                <ElixirText $bold $elixir="Neutral" variant="h4" component="span">
                     neutral
                 </ElixirText>
                 !
@@ -26,7 +26,7 @@ const ResultAssignment: FC<Props> = ({ scores }) => {
     const particle = getElixir(winners[0]).particle;
     const result = winners.map((out, i) => (
         <Fragment key={out}>
-            <ElixirText bold elixir={out} variant="h4" component="span">
+            <ElixirText $bold $elixir={out} variant="h4" component="span">
                 {out}
             </ElixirText>
             {i < winners.length - 1 && <Box component="span"> or </Box>}

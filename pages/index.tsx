@@ -1,6 +1,6 @@
 import { ReactElement, useState } from 'react';
 import useQuestions from '~/lib/useQuestions';
-import { Button, Box, withStyles } from '@material-ui/core';
+import { Button, Box } from '@material-ui/core';
 import AppView from '~/components/AppView';
 import Results from '~/components/Results';
 
@@ -15,19 +15,16 @@ import Link from 'next/link';
 import { sendStat } from '~/lib/stats';
 import LoadingIndicator from '~/components/LoadingIndicator';
 import omitProps from '~/lib/omitProps';
+import styled from 'styled-components';
 
-const Centered = withStyles({
-    root: {
-        width: '100%',
-        textAlign: 'center',
-    },
-})(Box);
+const Centered = styled(Box)({
+    width: '100%',
+    textAlign: 'center',
+});
 
-const WideButton = withStyles({
-    root: {
-        minWidth: ({ minWidth }: { minWidth?: string }) => minWidth || '10rem',
-    },
-})(omitProps(Button, 'minWidth'));
+const WideButton = styled(Button)<{ $minWidth?: string }>`
+    min-width: ${({ $minWidth }) => $minWidth || '10rem'};
+`;
 
 export default function Index(): ReactElement {
     const [questions, questionsLoading, error, refresh] = useQuestions(12);
@@ -134,7 +131,7 @@ export default function Index(): ReactElement {
                 {(!started || showingResults) && (
                     <Link href="/stats">
                         <WideButton
-                            minWidth="8rem"
+                            $minWidth="8rem"
                             variant="outlined"
                             color="default"
                             onClick={() => router.push('/stats')}

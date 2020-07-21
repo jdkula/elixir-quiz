@@ -1,19 +1,17 @@
-import { withStyles, Typography, TypographyProps } from '@material-ui/core';
+import { Typography, TypographyProps } from '@material-ui/core';
 import { ElixirType, getElixir } from '~/lib/elixir';
 import omitProps from '~/lib/omitProps';
-import { FC } from 'react';
+import styled from 'styled-components';
 
 interface Props extends TypographyProps {
-    elixir?: ElixirType;
-    bold?: boolean;
+    $elixir?: ElixirType;
+    $bold?: boolean;
     component?: string; // is not on TypographyProps for some reason...
 }
 
-const ElixirText = withStyles({
-    root: {
-        fontWeight: ({ bold }: Props) => (bold ? 'bold' : undefined),
-        color: ({ elixir }: Props) => getElixir(elixir)?.color ?? undefined,
-    },
-})(omitProps(Typography, 'elixir', 'bold')) as FC<Props>;
+const ElixirText = styled(Typography)<Props>`
+    font-weight: ${({ $bold: bold }) => (bold ? 'bold' : 'normal')};
+    color: ${({ $elixir: elixir }) => getElixir(elixir)?.color ?? ''};
+`;
 
 export default ElixirText;

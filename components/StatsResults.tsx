@@ -6,19 +6,19 @@ import ResultDialog from './ResultDialog';
 import ElixirText from './ElixirText';
 
 const useStyles = makeStyles({
-    aura: {
+    Aura: {
         color: getElixir('Aura').color,
     },
-    elemental: {
+    Elemental: {
         color: getElixir('Elemental').color,
     },
-    enchantment: {
+    Enchantment: {
         color: getElixir('Enchantment').color,
     },
-    transformation: {
+    Transformation: {
         color: getElixir('Transformation').color,
     },
-    neutral: {
+    Neutral: {
         color: getElixir('Neutral').color,
     },
 });
@@ -31,14 +31,14 @@ const StatsResults: FC<Props> = ({ result }) => {
     const classes = useStyles();
     const [modalOpen, setModal] = useState(false);
 
-    const buttonClass = result.result.length > 1 ? classes.neutral : classes[result.result[0].toLowerCase()];
+    const buttonClass = result.result.length > 1 ? classes.Neutral : classes[result.result[0]];
 
     return (
         <span>
             <Button className={buttonClass} onClick={() => setModal(true)} variant="outlined">
                 <Box display="inline-flex" flexDirection="column" alignItems="center">
                     {result.result.map((type, i) => (
-                        <ElixirText variant="inherit" key={i} elixir={type}>
+                        <ElixirText variant="inherit" key={i} $elixir={type}>
                             {type}
                             {i < result.result.length - 1 && (
                                 <Typography variant="inherit" color="textPrimary">
