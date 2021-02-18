@@ -106,7 +106,7 @@ export default function Index(): ReactElement {
                     <WideButton
                         onClick={start}
                         disabled={questionsLoading || started || error}
-                        variant="outlined"
+                        variant="contained"
                         color="secondary"
                         size="large"
                     >

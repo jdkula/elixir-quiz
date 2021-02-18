@@ -4,11 +4,15 @@ import Head from 'next/head';
 import { CssBaseline, ThemeProvider as MuiThemeProvider, createMuiTheme, StylesProvider } from '@material-ui/core';
 import { ThemeProvider } from 'styled-components';
 import { initGA, logPageView } from '~/lib/googleAnalytics';
+import { amber, cyan } from '@material-ui/core/colors';
 
 const theme = createMuiTheme({
     palette: {
         primary: {
-            main: '#4fd2d6',
+            main: cyan[400],
+        },
+        secondary: {
+            main: amber.A400,
         },
     },
 });
