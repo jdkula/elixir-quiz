@@ -14,7 +14,6 @@ import {
 } from '@material-ui/core';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
 
 const useStyles = makeStyles({
     noSelect: {

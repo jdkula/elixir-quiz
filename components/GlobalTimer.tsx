@@ -46,6 +46,7 @@ const GlobalTimerComponent = forwardRef((_, ref) => {
         </Card>
     );
 });
+GlobalTimerComponent.displayName = 'GlobalTimer';
 
 const GlobalTimer = GlobalTimerComponent as GlobalTimerType;
 

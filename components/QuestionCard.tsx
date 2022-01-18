@@ -23,4 +23,6 @@ const QuestionCard = forwardRef(({ question, index, children }: Props, ref) => {
     );
 });
 
+QuestionCard.displayName = 'QuestionCard';
+
 export default QuestionCard;

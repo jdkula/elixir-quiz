@@ -1,10 +1,10 @@
-import { AppPropsType } from 'next/dist/next-server/lib/utils';
 import { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
 import { CssBaseline, ThemeProvider as MuiThemeProvider, createMuiTheme, StylesProvider } from '@material-ui/core';
 import { ThemeProvider } from 'styled-components';
 import { initGA, logPageView } from '~/lib/googleAnalytics';
 import { amber, cyan } from '@material-ui/core/colors';
+import { AppPropsType } from 'next/dist/shared/lib/utils';
 
 const theme = createMuiTheme({
     palette: {
