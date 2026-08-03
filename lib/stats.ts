@@ -2,6 +2,7 @@ import { QuestionId, Scores, AnswerMap } from './quiz';
 import { ScoredElixirType, ElixirType } from './elixir';
 import Axios from 'axios';
 import GlobalTimer from '~/components/GlobalTimer';
+import { ObjectId } from 'mongodb';
 
 export interface AnswerResult {
     question: QuestionId;
@@ -17,7 +18,7 @@ export interface StatsReqBody {
 export interface FullResult extends StatsReqBody {
     scores: Scores;
     result: ElixirType[];
-    _id: string;
+    _id: string | ObjectId;
 }
 
 export interface StatsReply {

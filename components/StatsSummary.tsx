@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { Box, Typography, Container } from '@material-ui/core';
 import ElixirText from './ElixirText';
 import moment from 'moment';
@@ -6,7 +6,7 @@ import { StatsReply } from '~/lib/stats';
 import { truncate } from '~/lib/util';
 import styled from 'styled-components';
 
-const StatsItem: FC = ({ children }) => <Box my={2}>{children}</Box>;
+const StatsItem: FC<{children: ReactNode}> = ({ children }) => <Box my={2}>{children}</Box>;
 
 const StatsPoint = styled('span')({ fontWeight: 'bold' });
 

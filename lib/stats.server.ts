@@ -37,7 +37,7 @@ export async function getStats(): Promise<StatsReply> {
     const has = (type: ElixirType) => ({ $cond: [{ $in: [type, '$result'] }, 1, 0] });
 
     const winnerAggregate = await results
-        .aggregate([
+        .aggregate<Omit<StatsReply, "_id">>([
             {
                 $project: {
                     time: true,
@@ -84,8 +84,7 @@ export async function getStats(): Promise<StatsReply> {
         ])
         .toArray();
 
-    const clean: StatsReply & { _id: null } = winnerAggregate[0] ?? {
-        _id: null,
+    const clean: StatsReply = winnerAggregate[0] ?? {
         totalTime: 0,
         averageTime: 0,
         numTransformation: 0,
@@ -103,7 +102,7 @@ export async function getStats(): Promise<StatsReply> {
         averageTransformationScore: 0,
         totalResults: 0,
     };
-    delete clean._id;
+    delete (clean as any)._id;
 
     return clean;
 }
@@ -127,5 +126,5 @@ export async function recordStat(info: StatsReqBody): Promise<void> {
         result,
     };
 
-    await results.insertOne(stats);
+    await results.insertOne(stats as FullResult);
 }

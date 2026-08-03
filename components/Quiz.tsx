@@ -4,7 +4,7 @@ import QuizContainer from './QuizContainer';
 import { GridListTile } from '@material-ui/core';
 import QuestionCard from './QuestionCard';
 import AnswerOption from './AnswerOption';
-import { ElixirType } from '~/lib/elixir';
+import { ElixirType, ScoredElixirType } from '~/lib/elixir';
 
 import { Set } from 'immutable';
 import DelayedSlide from './DelayedSlide';
@@ -26,11 +26,11 @@ export default function Quiz({
     started,
     isModal,
 }: Props): ReactElement {
-    const getSelect = (question: QuestionId) => (type: ElixirType) => {
+    const getSelect = (question: QuestionId) => (type: ScoredElixirType) => {
         setAnswers(answers.set(question, (answers.get(question) ?? Set()).add(type)));
     };
 
-    const getDeselect = (question: QuestionId) => (type: ElixirType) => {
+    const getDeselect = (question: QuestionId) => (type: ScoredElixirType) => {
         setAnswers(answers.set(question, (answers.get(question) ?? Set()).delete(type)));
     };
 

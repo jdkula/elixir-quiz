@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -e
+
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+nvm use
+corepack enable
+corepack install
+pnpm ci -r

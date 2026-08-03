@@ -1,0 +1,4 @@
+steps:
+    - name: ':node: build'
+      command:
+          - pnpm run build

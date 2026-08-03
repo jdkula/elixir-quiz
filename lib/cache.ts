@@ -62,7 +62,7 @@ async function getCachedQuestions(selected?: number): Promise<Question[] | null>
     }
 
     const questions: Question[] = await db
-        .aggregate([
+        .aggregate<Question>([
             {
                 $match: {
                     _id: kCacheId,
@@ -90,7 +90,7 @@ export async function getQuestionsForResult(resultId: string): Promise<Question[
     const qids = result.answers.map((ar) => ar.question);
 
     const questions = await cache
-        .aggregate([
+        .aggregate<Question>([
             { $unwind: '$questions' },
             kProjectInnerQuestion,
             {
